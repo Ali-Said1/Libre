@@ -1,0 +1,232 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
+const User = require("./models/User");
+const Rating = require("./models/Rating");
+const cookieParser = require("cookie-parser");
+const app = express();
+app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true
+}));
+app.use(cookieParser());
+
+const JWT_SECRET = "123";
+
+// Connect Mongo
+mongoose.connect("mongodb://127.0.0.1:27017/libre", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+// ===================== AUTH =====================
+
+// Signup
+app.post("/signup", async (req, res) => {
+    console.log(req)
+    const { name, email, password } = req.body;
+    const hashed = await bcrypt.hash(password, 10);
+    const date_joined = Date.now()
+
+    try {
+        const user = await User.create({ name, email, password: hashed, date_joined });
+        res.json({ message: "User created", userId: user._id });
+    } catch (err) {
+        res.status(400).json({ error: "Email already exists" });
+    }
+});
+
+// Login
+app.post("/login", async (req, res) => {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ error: "User not found" });
+
+    const isPassValid = await bcrypt.compare(password, user.password);
+    if (!isPassValid) return res.status(400).json({ error: "Invalid password" });
+
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "24h" });
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000
+    });
+
+    res.json({ message: "Login successful" });
+});
+
+app.post("/logout", (req, res) => {
+    res.clearCookie("token");
+    res.json({ message: "Logged out" });
+});
+
+app.get("/me", auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("-password");
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Middleware to check JWT
+function auth(req, res, next) {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "No token" });
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.userId = decoded.id;
+        next();
+    } catch {
+        res.status(401).json({ error: "Invalid token" });
+    }
+}
+
+// ===================== CART =====================
+
+// Get user cart
+app.get("/cart", auth, async (req, res) => {
+    const user = await User.findById(req.userId);
+    res.json(user.cart);
+});
+
+// Add item to cart
+app.post("/cart", auth, async (req, res) => {
+    const { productId, quantity } = req.body;
+    const user = await User.findById(req.userId);
+
+    // Check if item already exists
+    const item = user.cart.find(i => i.productId === productId);
+    if (item) {
+        item.quantity += quantity;
+    } else {
+        user.cart.push({ productId, quantity });
+    }
+
+    await user.save();
+    res.json(user.cart);
+});
+
+// Remove item from cart
+app.delete("/cart/:productId", auth, async (req, res) => {
+    const { productId } = req.params;
+    const user = await User.findById(req.userId);
+    const item = user.cart.find(i => i.productId === productId);
+    if (item) {
+        item.quantity = item.quantity - 1;
+        if (item.quantity === 0) {
+            user.cart = user.cart.filter(i => i.productId !== productId);
+        }
+        await user.save();
+    }
+
+    res.json(user.cart);
+});
+
+app.delete("/cart/remove/:productId", auth, async (req, res) => {
+    const { productId } = req.params;
+    const user = await User.findById(req.userId);
+
+    user.cart = user.cart.filter(i => i.productId !== productId);
+    await user.save();
+
+    res.json(user.cart);
+});
+
+
+// rating
+app.post("/rate", auth, async (req, res) => {
+    const { productId, rating } = req.body;
+
+    // Check if user already rated this product
+    let existing = await Rating.findOne({ userId: req.userId, productId });
+
+    if (existing) {
+        existing.rating = rating; // update rating
+        await existing.save();
+    } else {
+        existing = await Rating.create({ userId: req.userId, productId, rating });
+    }
+
+    res.json(existing);
+});
+
+app.get("/rating/:productId", async (req, res) => {
+    const { productId } = req.params;
+
+    const ratings = await Rating.find({ productId });
+    if (ratings.length === 0) return res.json({ average: 0, count: 0 });
+
+    const avg =
+        ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
+
+    res.json({ average: avg, count: ratings.length });
+});
+
+// wishlist
+app.post("/wishlist", auth, async (req, res) => {
+    const { productId } = req.body;
+    if (!productId) return res.status(400).json({ error: "Product ID required" });
+
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // prevent duplicates
+        if (user.wishlist.some(item => item.productId === productId)) {
+            return res.status(400).json({ error: "Already in wishlist" });
+        }
+
+        user.wishlist.push({ productId });
+        await user.save();
+
+        res.json({ message: "Added to wishlist", wishlist: user.wishlist });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.post("/wishlist/remove", auth, async (req, res) => {
+    const { productId } = req.body;
+    if (!productId) return res.status(400).json({ error: "Product ID required" });
+
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // prevent duplicates
+        if (!user.wishlist.some(item => item.productId === productId)) {
+            return res.status(400).json({ error: "Doesn't exist in wishlist" });
+        }
+
+        user.wishlist = user.wishlist.filter(item => item.productId !== productId)
+
+        await user.save();
+
+        res.json({ message: "Removed from wishlist", wishlist: user.wishlist });
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.get("/wishlist", auth, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select("wishlist");
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        res.json(user.wishlist);
+    } catch (err) {
+        res.status(500).json({ error: "Server error" });
+    }
+});
+app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+
