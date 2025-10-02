@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/forms.css">
+    <title>Libre - Sign up</title>
+</head>
+<body>
+    <div class="vh-100 w-100 d-flex justify-content-center align-items-center">
+        <form class=" px-5 py-3 h-75 d-flex justify-content-center align-items-center flex-column gap-5 border-2 rounded-2 border shadow-lg">
+            <h1 class="text-center text-black">Sign Up</h1>
+            <p id="errorMessage" class="text-center text-danger"></p>
+            <div class="d-flex flex-column w-100 align-items-center gap-3">
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="text" class="form-control border-top-0 border-end-0 border-start-0 border-3" placeholder="Username" id="username">
+                    <label for="username">Username</label>
+                    <div class="invalid-feedback">
+                        <p>Username must be 3-20 characters with no spaces or symbols</p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="email" class="form-control border-top-0 border-end-0 border-start-0 border-3" id="email" placeholder="Enter Password">
+                    <label for="email">Email</label>
+                    <div class="invalid-feedback">
+                        <p>Please enter a valid email.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="password" class="form-control border-top-0 border-end-0 border-start-0 border-3" id="password" placeholder="Enter Password">
+                    <label for="password">Password</label>
+                    <div class="invalid-feedback">
+                        <p>Password must be at least 8 characters and contains one uppercase letter, one number, and one special char</p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="password" class="form-control border-top-0 border-end-0 border-start-0 border-3" id="confirmPassword" placeholder="Enter Password">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="invalid-feedback">
+                       <p>Passwords must match.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-3 w-100">
+                <button type="submit" class="btn btn-primary">Sign up</button>
+
+                <span class="text-center mt-4">Already have an account? <a href="signin.html">Sign in</a></span>
+            </div>
+        </form>
+    </div>
+    <script src="scripts/formValidation.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
