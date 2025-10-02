@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/forms.css">
+    <title>Libre - Sign in</title>
+</head>
+<body>
+    <div class="vh-100 w-100 d-flex justify-content-center align-items-center">
+        <form class=" px-5 py-3 h-75 d-flex justify-content-center align-items-center flex-column gap-5 border-2 rounded-2 border shadow-lg" id="signInForm">
+            <h1 class="text-center text-black">Sign In</h1>
+            <div class="d-flex flex-column w-100 align-items-center gap-3">
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="text" class="form-control border-top-0 border-end-0 border-start-0 border-3" placeholder="Username" id="username">
+                    <label for="username">Username</label>
+                    <div class="invalid-feedback">
+                        <p>Invalid Username</p>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column w-100 form-floating">
+                    <input type="password" class="form-control border-top-0 border-end-0 border-start-0 border-3" id="password" placeholder="Enter Password">
+                    <label for="password">Password</label>
+                    <div class="invalid-feedback">
+                        <p>Invalid Password</p>  <!--incorrect password in backend, activate by putting (is-invalid) class in input-->
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-3 w-100">
+                <div class="form-check">
+                            <input class="form-check-input border border-2 border-dark" type="checkbox" id="rememberMe">
+                            <label for="rememberMe" class="text-black form-check-label">Remember Me</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Sign in</button>
+
+                <span class="text-center mt-4">Don't have an account? <a href="signup.html">Sign up</a></span>
+            </div>
+        </form>
+    </div>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

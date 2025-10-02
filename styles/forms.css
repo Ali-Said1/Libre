@@ -1,0 +1,25 @@
+form h1 {
+    font-family: 'Roboto', sans-serif;
+}
+input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+form {
+    width: 40%;
+    min-height: fit-content;
+    background-color: aliceblue;
+}
+
+@media screen and (max-width: 992px) {
+    form {
+        width: 60%;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    form {
+        width: 80%;
+    }
+}
