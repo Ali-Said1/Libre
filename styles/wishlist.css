@@ -1,0 +1,18 @@
+#wishlist {
+    font-family: "Roboto", sans-serif;
+    font-weight: 800;
+}
+
+#noWishlist {
+    font-weight: 800;
+    font-size: 2rem;
+}
+.card {
+    transition-duration: 0.7s;
+}
+.card:hover {
+    color: white;
+    background-color: rgb(43, 40, 40);
+    border-color: black;
+    transform: scale(1.05);
+}
