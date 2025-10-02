@@ -12,12 +12,12 @@ passwordInput.addEventListener('input',validatePassword);
 const confirmPasswordInput = document.querySelector('#confirmPassword');
 confirmPasswordInput.addEventListener('input',validateConfirmPassword);
 
-const signupForm = document.querySelector("form");
+const signUpForm = document.querySelector("#signUpForm");
 
-signupForm.addEventListener('submit',(submitEvent)=>{
+signUpForm.addEventListener('submit',(submitEvent)=>{
     submitEvent.preventDefault();
     if (validateUsername() && validateEmail() && validatePassword() && validateConfirmPassword()) {
-        signupForm.submit();
+        signUpForm.submit();
     }
 })
 
