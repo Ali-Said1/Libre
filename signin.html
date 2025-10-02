@@ -10,14 +10,14 @@
 </head>
 <body>
     <div class="vh-100 w-100 d-flex justify-content-center align-items-center">
-        <form class=" px-5 py-3 h-75 d-flex justify-content-center align-items-center flex-column gap-5 border-2 rounded-2 border shadow-lg">
+        <form class=" px-5 py-3 h-75 d-flex justify-content-center align-items-center flex-column gap-5 border-2 rounded-2 border shadow-lg" id="signInForm">
             <h1 class="text-center text-black">Sign In</h1>
             <div class="d-flex flex-column w-100 align-items-center gap-3">
                 <div class="d-flex flex-column w-100 form-floating">
                     <input type="text" class="form-control border-top-0 border-end-0 border-start-0 border-3" placeholder="Username" id="username">
                     <label for="username">Username</label>
                     <div class="invalid-feedback">
-                        <p>Invalid Username</p> <!--Didn't find username in backend, activate by putting (is-invalid) class in input-->
+                        <p>Invalid Username</p>
                     </div>
                 </div>
 
@@ -25,7 +25,7 @@
                     <input type="password" class="form-control border-top-0 border-end-0 border-start-0 border-3" id="password" placeholder="Enter Password">
                     <label for="password">Password</label>
                     <div class="invalid-feedback">
-                        <p>Invalid Username</p>  <!--incorrect password in backend, activate by putting (is-invalid) class in input-->
+                        <p>Invalid Password</p>  <!--incorrect password in backend, activate by putting (is-invalid) class in input-->
                     </div>
                 </div>
             </div>
