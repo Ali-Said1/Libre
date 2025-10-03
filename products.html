@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.css"/>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles/products.css">
+</head>
+<body>
+    <main class="container my-4">
+        <!-- Page loader (shown while initial data or next page is being fetched) -->
+        <div id="page-loader" class="position-fixed top-0 start-0 vw-100 vh-100 d-flex justify-content-center align-items-center bg-white">
+            <div class="text-center">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-2 small text-muted">Loading books…</div>
+            </div>
+        </div>
+        <h2 class="mb-3">Filter by Category:</h2>
+
+    <!-- Category pills will be injected here -->
+    <div id="category-filters" class="d-flex flex-wrap align-items-center mb-4 gap-2"></div>
+
+        <!-- Books grid -->
+                <div id="books-grid" class="row gy-3"></div>
+
+                <!-- Load more -->
+                <div id="load-more-container" class="d-flex justify-content-center mt-4">
+                    <button id="load-more-btn" class="btn btn-outline-danger">Load more</button>
+                </div>
+    </main>
+
+    <!-- intro animated book shown before the page content loads -->
+    <div id="intro-overlay" class="intro-overlay" aria-hidden="true">
+        <div class="intro-book" role="img" aria-hidden="true">
+            <div class="cover left"></div>
+            <div class="pages">
+                <div class="intro-logo" aria-hidden="true">Libre</div>
+            </div>
+            <div class="cover right"></div>
+        </div>
+    </div>
+
+    <script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="scripts/products.js"></script>
+</body>
+</html>
