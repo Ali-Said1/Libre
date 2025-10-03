@@ -1,0 +1,342 @@
+/* Theme and page base */
+:root{
+    --theme: 224, 32, 32; /* store as rgb components for rgba use */
+    --theme-hex: #e02020;
+    --accent: #3b82f6;
+    --muted: #6b7280;
+    --card-bg: #ffffff;
+    --surface: #f8fafc;
+}
+
+body{
+    background: linear-gradient(180deg, #fbfbfb 0%, #f3f6f8 100%);
+    color: #1f2937;
+    -webkit-font-smoothing:antialiased;
+}
+/* Category pills */
+.category-pill{
+    border-radius: 999px;
+    padding: .45rem .75rem;
+    transition: transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease, background .18s ease, color .12s ease;
+}
+
+.category-pill:hover{
+    transform: translateY(-3px);
+}
+
+.category-pill.active{
+    background: rgba(var(--theme),1) !important;
+    border-color: rgba(var(--theme),1) !important;
+    color: #fff !important;
+    box-shadow: 0 12px 30px rgba(var(--theme),0.12);
+    transform: scale(1.03);
+}
+
+/* improved pill readability */
+.category-pill{ font-size: 0.95rem; font-weight: 600; color: #1f2937 }
+.category-label{ white-space: nowrap }
+.category-count{ font-size: .75rem; padding: .15rem .45rem; border-radius: 999px }
+
+/* make the container horizontally scrollable on small screens */
+#category-filters{ overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: .25rem }
+#category-filters::-webkit-scrollbar{ height: 8px }
+#category-filters::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.08); border-radius: 8px }
+
+/* ensure pills wrap on larger screens but remain compact */
+#category-filters.d-flex{ gap: .5rem }
+
+/* Books grid */
+
+.card.book-card{
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease;
+    will-change: transform, box-shadow;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+}
+.card.book-card:hover{
+    transform: translateY(-10px);
+    box-shadow: 0 24px 60px rgba(15,23,42,0.14);
+}
+
+.card-img-top.book-cover{
+    width: 100%;
+    height: 240px;
+    object-fit: contain; /* preserve entire cover, avoid cropping */
+    background: linear-gradient(180deg,#f8fafc,#ffffff);
+    padding: 12px; /* breathing room so covers don't touch edges */
+    max-height: 320px;
+}
+
+.img-wrap{ display: flex; align-items: center; justify-content: center; background: #fff; }
+.img-wrap img{ max-width: 100%; max-height: 100%; height: auto; }
+
+.card .card-title{ margin: .25rem 0 0; font-size: 1rem; font-weight: 600 }
+.card .card-text{ margin: .25rem 0; font-size: .85rem; color: var(--muted) }
+
+/* Actions */
+.book-card .d-flex.gap-2{ margin-top: .6rem }
+.book-card .btn{ border-radius: 8px }
+
+/* actions layout: hide by default and reveal on hover */
+.card .card-footer{
+    background: transparent;
+    border-top: 0;
+    margin-top: auto;
+}
+
+/* cart button animation */
+.card .btn-danger{
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: transform .18s ease, box-shadow .12s ease;
+}
+.card .btn-danger:hover{
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 26px rgba(var(--theme),0.12);
+}
+.card .btn-danger:active{
+    transform: translateY(0) scale(.98);
+}
+
+/* little shake for the cart icon when added */
+.card .btn-danger.added i{
+    animation: cartShake .5s ease;
+}
+@keyframes cartShake{
+    0%{ transform: translateX(0) }
+    20%{ transform: translateX(-4px) rotate(-6deg) }
+    40%{ transform: translateX(4px) rotate(6deg) }
+    60%{ transform: translateX(-2px) rotate(-3deg) }
+    80%{ transform: translateX(2px) rotate(3deg) }
+    100%{ transform: translateX(0) rotate(0) }
+}
+
+/* Load more button */
+#load-more-container{ margin-bottom: 3rem; }
+#load-more-btn{
+    min-width: 160px;
+    border-radius: 999px;
+    padding: .55rem 1.1rem;
+    background: linear-gradient(90deg, rgba(var(--theme),1), rgba(var(--theme),0.92));
+    color: #fff;
+    border: none;
+    box-shadow: 0 10px 28px rgba(var(--theme),0.14);
+    transition: transform .14s ease, box-shadow .14s ease, opacity .12s ease;
+}
+#load-more-btn:hover{ transform: translateY(-3px) }
+
+
+/* page loader/states */
+#page-loader{
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    transition: opacity .18s ease, visibility .18s ease;
+}
+
+
+/* animations */
+@keyframes cardFadeIn{
+    from{ opacity: 0; transform: translateY(10px) scale(.995) }
+    to  { opacity: 1; transform: translateY(0) scale(1) }
+}
+
+@keyframes floaty{
+    0%{ transform: translateY(0) }
+    50%{ transform: translateY(-6px) }
+    100%{ transform: translateY(0) }
+}
+
+/* small shimmer for image placeholder */
+.row .book-card:nth-child(4n+1){ animation-delay: .02s }
+.row .book-card:nth-child(4n+2){ animation-delay: .06s }
+.row .book-card:nth-child(4n+3){ animation-delay: .10s }
+.row .book-card:nth-child(4n+4){ animation-delay: .14s }
+
+
+/* misc small utilities */
+.small.text-muted{ color: var(--muted) }
+
+
+/* responsive tweaks */
+@media (max-width: 576px){
+    .card.book-card{ min-height: 260px }
+    .card-img-top.book-cover{ height: 200px }
+}
+
+
+/* Accessibility: focus states */
+.category-pill:focus, .btn:focus{ outline: 3px solid rgba(var(--theme),0.14); outline-offset: 2px }
+
+/* Details overlay modal */
+.details-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.48);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10000;
+    transition: opacity .22s ease, visibility .22s ease;
+}
+.details-overlay.enter{ opacity: 1; visibility: visible }
+.details-overlay.leave{ opacity: 0; visibility: hidden }
+
+.details-card{
+    width: min(960px, 94%);
+    max-height: 86vh;
+    overflow: auto;
+    border-radius: 12px;
+    transform: translateY(18px) scale(.98);
+    transition: transform .22s cubic-bezier(.2,.9,.2,1), opacity .18s ease;
+}
+.details-card.pop{ transform: translateY(0) scale(1) }
+
+.details-img-wrap{ height: 340px; background: linear-gradient(180deg,#fff,#f7fafc); padding: 18px }
+.details-img{ max-height: 100%; width: auto; display:block; margin:auto }
+
+.details-body{ padding-bottom: 1.5rem }
+.details-desc{
+    /* wider for improved readability on larger screens */
+    max-width: min(100ch, 96vw);
+    line-height: 1.75;
+    margin-top: .6rem;
+    color: #374151; /* slightly darker for readability */
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    transition: opacity .18s ease, transform .18s ease;
+    opacity: 0;
+    transform: translateY(6px);
+}
+.details-overlay.enter .details-desc{ opacity: 1; transform: none }
+
+/* decorative drop cap for a nicer look */
+.details-desc::first-letter{
+    float: left;
+    font-size: 2.6rem;
+    line-height: 1;
+    padding-right: .38rem;
+    padding-top: .08rem;
+    font-weight: 700;
+    color: rgba(var(--theme),1);
+}
+
+@media (max-width: 700px){
+    .details-card{ width: 96%; }
+    .details-img-wrap{ height: 220px }
+    /* mobile/tablet cap increased to allow more width on narrow screens */
+    .details-desc{ max-width: min(84ch, 98vw) }
+}
+
+/* Intro overlay and opening book animation */
+.intro-overlay{
+    position: fixed;
+    inset: 0;
+    /* hidden by default until we trigger the intro after data loads */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(255,255,255,1), rgba(245,247,250,1));
+    z-index: 11000;
+    backdrop-filter: blur(6px);
+}
+.intro-overlay.playing{ display: flex }
+.intro-book{
+    width: min(72vw, 720px);
+    max-width: 720px;
+    height: min(48vw, 480px);
+    max-height: 480px;
+    position: relative;
+    perspective: 1600px;
+    transform: translateY(-2vh);
+}
+.intro-book .cover, .intro-book .pages{
+    position: absolute;
+    top: 0; bottom: 0;
+}
+.intro-book .cover.left, .intro-book .cover.right{
+    width: 44%;
+    border-radius: 8px;
+    box-shadow: 0 22px 88px rgba(15,23,42,0.18);
+    transform-origin: left center;
+}
+.intro-book .cover.left{
+    left: 0;
+    background: linear-gradient(180deg, var(--theme-hex), rgba(180,20,20,0.9));
+}
+.intro-book .cover.right{
+    transform-origin: right center;
+    right: 0;
+    background: linear-gradient(180deg, var(--accent), rgba(58,99,200,0.9));
+}
+.intro-book .cover.left{ left: 0 }
+.intro-book .pages{
+    left: 44%; right: 44%; background: #fff; margin: 0 8px; border-radius: 4px; box-shadow: inset 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.intro-book .pages::before{
+    content: "";
+    position: absolute;
+    left: 8%; right: 8%; top: 8%; bottom: 8%;
+    background: linear-gradient(180deg, #fff, #fbfbff);
+    border-radius: 3px;
+    box-shadow: inset 0 8px 18px rgba(0,0,0,0.02);
+}
+
+.intro-logo{
+    position: absolute;
+    left: 50%; top: 48%;
+    transform: translate(-50%, -50%) scale(.92);
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    font-size: clamp(28px, 6vw, 56px);
+    color: rgba(var(--theme),1);
+    letter-spacing: .06em;
+    opacity: 0;
+    transition: opacity .46s ease, transform .46s cubic-bezier(.2,.9,.2,1);
+}
+
+.intro-overlay.playing .intro-logo{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce){
+    .intro-logo{ transition: none; opacity: 1 }
+}
+
+/* gentle scale/tilt during open */
+.intro-overlay.playing .intro-book{ transform: translateY(-2vh) scale(1.02) rotateX(1.2deg) }
+
+/* keyframes: open animation */
+@keyframes book-open-left{
+    0%{ transform: rotateY(0deg) }
+    50%{ transform: rotateY(-130deg) }
+    100%{ transform: rotateY(-110deg) }
+}
+@keyframes book-open-right{
+    0%{ transform: rotateY(0deg) }
+    50%{ transform: rotateY(130deg) }
+    100%{ transform: rotateY(110deg) }
+}
+@keyframes book-fadeout{
+    0%{ opacity:1 }
+    90%{ opacity:1 }
+    100%{ opacity:0 }
+}
+
+/* apply animation to covers */
+.intro-overlay.playing .intro-book .cover.left{ animation: book-open-left 1.6s cubic-bezier(.2,.9,.2,1) forwards }
+.intro-overlay.playing .intro-book .cover.right{ animation: book-open-right 1.6s cubic-bezier(.2,.9,.2,1) forwards }
+.intro-overlay.playing{ animation: book-fadeout 0.45s ease 1.7s forwards }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+    .intro-overlay, .intro-book .cover{ animation: none !important }
+}
+
+/* Floating decorative icons removed */
