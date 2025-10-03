@@ -1,25 +1,25 @@
 //Sign up form validation
 
 const usernameInput = document.querySelector('#username');
-usernameInput.addEventListener('input',validateUsername);
+usernameInput.addEventListener('input', validateUsername);
 
 const emailInput = document.querySelector("#email");
-emailInput.addEventListener('input',validateEmail);
+emailInput.addEventListener('input', validateEmail);
 
 const passwordInput = document.querySelector('#password');
-passwordInput.addEventListener('input',validatePassword);
+passwordInput.addEventListener('input', validatePassword);
 
 const confirmPasswordInput = document.querySelector('#confirmPassword');
-confirmPasswordInput.addEventListener('input',validateConfirmPassword);
+confirmPasswordInput.addEventListener('input', validateConfirmPassword);
 
-const signUpForm = document.querySelector("#signUpForm");
+const signupForm = document.querySelector("form");
 
-signUpForm.addEventListener('submit',(submitEvent)=>{
-    submitEvent.preventDefault();
-    if (validateUsername() && validateEmail() && validatePassword() && validateConfirmPassword()) {
-        signUpForm.submit();
-    }
-})
+// signupForm.addEventListener('submit', (submitEvent) => {
+//     submitEvent.preventDefault();
+//     if (validateUsername() && validateEmail() && validatePassword() && validateConfirmPassword()) {
+//         signupForm.submit();
+//     }
+// })
 
 function validateUsername() {
     const username = usernameInput.value;
@@ -44,7 +44,7 @@ function validateEmail() {
     }
     emailInput.classList.remove("is-invalid");
     emailInput.classList.add('is-valid');
-        return true;
+    return true;
 }
 function validatePassword() {
     const password = passwordInput.value;

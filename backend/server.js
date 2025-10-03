@@ -20,29 +20,69 @@ const JWT_SECRET = "123";
 mongoose.connect("mongodb://127.0.0.1:27017/libre", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-});
+}).then(() => console.log("MongoDB connected"))
+    .catch(err => console.error("Mongo error:", err));
 
 // ===================== AUTH =====================
 
+function validateUsername(username) {
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(username)) {
+        return false;
+    }
+    return true;
+}
+
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return false;
+    }
+    return true;
+}
+function validatePassword(pass) {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/
+    //Makes sure that the password is at least 8 characters long, contains one uppercase, one special char and one number.
+    if (!passwordRegex.test(pass)) {
+        return false;
+    }
+    return true;
+}
+
 // Signup
 app.post("/signup", async (req, res) => {
-    console.log(req)
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
+    if (!validateUsername(username)) {
+        return res.status(400).json({ error: "Invalid username" });
+    }
+    if (!validateEmail(email)) {
+        return res.status(400).json({ error: "Invalid email" });
+    }
+    if (!validatePassword(password)) {
+        return res.status(400).json({ error: "Invalid password" });
+    }
+
     const hashed = await bcrypt.hash(password, 10);
-    const date_joined = Date.now()
+
 
     try {
-        const user = await User.create({ name, email, password: hashed, date_joined });
+        const user = await User.create({ username, email, password: hashed });
         res.json({ message: "User created", userId: user._id });
     } catch (err) {
-        res.status(400).json({ error: "Email already exists" });
+        if (err.code === 11000) {
+            res.status(400).json({ error: "Email or Username already exists" });
+        } else {
+            console.error(err);
+            res.status(500).json({ error: "Server error" });
+        }
     }
 });
 
 // Login
 app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { username, password, remember } = req.body;
+    const user = await User.findOne({ username });
+    console.log(user)
     if (!user) return res.status(400).json({ error: "User not found" });
 
     const isPassValid = await bcrypt.compare(password, user.password);
@@ -54,7 +94,7 @@ app.post("/login", async (req, res) => {
         httpOnly: true,
         secure: false,
         sameSite: "lax",
-        maxAge: 24 * 60 * 60 * 1000
+        ...(remember ? { maxAge: 24 * 60 * 60 * 1000 } : {})
     });
 
     res.json({ message: "Login successful" });

@@ -1,5 +1,6 @@
 const usernameInput = document.querySelector('#username');
 const passwordInput = document.querySelector('#password');
+const remeberMe = document.querySelector('#rememberMe')
 
 const signInForm = document.querySelector("#signInForm");
 const errorParagraph = document.querySelector("#errorMessage");
@@ -22,7 +23,8 @@ async function sendSignInData() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         username: usernameInput.value,
-        password: passwordInput.value
+        password: passwordInput.value,
+        remember: remeberMe.checked
       }),
       credentials: "include"
     });

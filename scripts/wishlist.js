@@ -8,46 +8,53 @@
 
 const noBooksInWishlist = document.querySelector("#noWishlist");
 async function getWishlist() {
-    const reponse = await fetch("http://localhost:3000/books");
+    const reponse = await fetch("http://localhost:3000/wishlist");
     const body = await reponse.json();
     return body;
 }
 async function renderWishlist() {
-    const wishlist = await getWishlist();
-    if (wishlist.length === 0) {
-        noBooksInWishlist.classList.remove("d-none");
-    } else {
-        noBooksInWishlist.classList.add("d-none");
-        const wishlistContainer = document.querySelector("#wishlistContainer");
-        for (const item of wishlist) {
-            const itemContainer = document.createElement("div");
-            itemContainer.setAttribute("class","card col-12 col-sm-6 col-lg-4 mx-auto");
-            itemContainer.style.width = "18rem";
+    try {
+        const wishlist = await getWishlist();
+        if (wishlist.length === 0) {
+            noBooksInWishlist.classList.remove("d-none");
+        } else {
+            noBooksInWishlist.classList.add("d-none");
+            const wishlistContainer = document.querySelector("#wishlistContainer");
+            for (const item of wishlist) {
+                const itemContainer = document.createElement("div");
+                itemContainer.setAttribute("class", "card col-12 col-sm-6 col-lg-4 mx-auto");
+                itemContainer.style.width = "18rem";
 
-            const bookImage = document.createElement("img");
-            bookImage.setAttribute("src",item.image);
-            bookImage.setAttribute("class","card-img-top");
+                const bookImage = document.createElement("img");
+                bookImage.setAttribute("src", item.image);
+                bookImage.setAttribute("class", "card-img-top");
 
-            const cardBody = document.createElement("div");
-            cardBody.setAttribute("class","card-body text-center");
-            const bookName = document.createElement("h5");
+                const cardBody = document.createElement("div");
+                cardBody.setAttribute("class", "card-body text-center");
+                const bookName = document.createElement("h5");
 
-            bookName.innerText = item.title;
-            bookName.setAttribute("class","card-title");
+                bookName.innerText = item.title;
+                bookName.setAttribute("class", "card-title");
 
-            const removeButton = document.createElement("button");
-            removeButton.setAttribute("class","btn btn-danger w-100 mt-5");
-            removeButton.addEventListener('click',async ()=>{await removeItem(item.id)});
-            removeButton.innerText = "Remove";
+                const removeButton = document.createElement("button");
+                removeButton.setAttribute("class", "btn btn-danger w-100 mt-5");
+                removeButton.addEventListener('click', async () => { await removeItem(item.id) });
+                removeButton.innerText = "Remove";
 
-            cardBody.appendChild(bookName);
-            cardBody.appendChild(removeButton);
+                cardBody.appendChild(bookName);
+                cardBody.appendChild(removeButton);
 
-            itemContainer.appendChild(bookImage);
-            itemContainer.appendChild(cardBody);
+                itemContainer.appendChild(bookImage);
+                itemContainer.appendChild(cardBody);
 
-            wishlistContainer.appendChild(itemContainer);
+                wishlistContainer.appendChild(itemContainer);
+            }
         }
+    }
+    catch (e) {
+        console.error(e.message)
+        noBooksInWishlist.classList.remove("d-none");
+
     }
 }
 
@@ -58,4 +65,4 @@ async function removeItem(id) {
     await renderWishlist();
 }
 
-document.addEventListener('DOMContentLoaded',renderWishlist)
+document.addEventListener('DOMContentLoaded', renderWishlist)
