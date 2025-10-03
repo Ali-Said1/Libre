@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@467&family=Creepster&family=Signika:wght@300..700&display=swap");
+html,
+body {
+  height: 100%;
+}
+* {
+  text-decoration: none;
+}
+.hoke {
+  width: 60%;
+}
+h3 {
+  font-family: "Caveat", sans-serif;
+}
+.txt {
+  font-family: "Signika", sans-serif;
+  white-space: pre-line;
+  font-size: 1rem;
+  color: rgb(224, 32, 32);
+  font-size: 1.1rem;
+}
+.animat {
+  width: 90vw;
+  height: 20vh;
+  color: rgb(224, 32, 32);
+  font-family: "Creepster";
+}
+.title {
+  width: 50%;
+}
+.nv {
+  color: rgb(224, 32, 32) !important;
+}
+.lets {
+  background-color: rgb(224, 32, 32);
+  color: white;
+}
+.lets a {
+  color: inherit;
+  text-decoration: none;
+}
