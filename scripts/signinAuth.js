@@ -2,10 +2,17 @@ const usernameInput = document.querySelector('#username');
 const passwordInput = document.querySelector('#password');
 
 const signInForm = document.querySelector("#signInForm");
-
+const errorParagraph = document.querySelector("#errorMessage");
 signInForm.addEventListener('submit', async (submitEvent) => {
   submitEvent.preventDefault();
-  await sendSignInData();
+  const response = await sendSignInData();
+  if (!response || response.status !== 200) {
+    signInForm.reset();
+    errorParagraph.innerText = "Incorrect Username/Password";
+  } else {
+    errorParagraph.innerText = "";
+    window.location.href = "index.html";
+  }
 });
 
 async function sendSignInData() {
@@ -20,12 +27,7 @@ async function sendSignInData() {
       credentials: "include"
     });
 
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
-
-    const responseBody = await response.json();
-    console.log(responseBody);
+    return response;
 
   } catch (error) {
     console.error(`Signin failed: ${error}`);
