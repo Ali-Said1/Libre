@@ -156,9 +156,10 @@ app.post("/cart", auth, async (req, res) => {
     res.json(user.cart);
 });
 
-// Remove item from cart
+// Remove qunatity of an item from cart
 app.delete("/cart/:productId", auth, async (req, res) => {
-    const { productId, quantity } = req.params;
+    const { productId } = req.params;
+    const { quantity } = req.body
     const user = await User.findById(req.userId);
     const item = user.cart.find(i => i.productId === productId);
     if (item) {
@@ -200,6 +201,23 @@ app.post("/rate", auth, async (req, res) => {
     }
 
     res.json(existing);
+});
+
+app.delete("/rate", auth, async (req, res) => {
+    const { productId } = req.body;
+
+    try {
+        const deleted = await Rating.findOneAndDelete({ userId: req.userId, productId });
+
+        if (!deleted) {
+            return res.status(404).json({ error: "No rating found to delete" });
+        }
+
+        res.json({ message: "Rating removed successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
 });
 
 app.get("/rating/:productId", async (req, res) => {
