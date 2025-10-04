@@ -158,11 +158,13 @@ app.post("/cart", auth, async (req, res) => {
 
 // Remove item from cart
 app.delete("/cart/:productId", auth, async (req, res) => {
-    const { productId } = req.params;
+    const { productId, quantity } = req.params;
     const user = await User.findById(req.userId);
     const item = user.cart.find(i => i.productId === productId);
     if (item) {
-        item.quantity = item.quantity - 1;
+        if (quantity > item.quantity) item.quantity = 0
+        else
+            item.quantity = item.quantity - qunatity;
         if (item.quantity === 0) {
             user.cart = user.cart.filter(i => i.productId !== productId);
         }
