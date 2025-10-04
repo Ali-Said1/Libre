@@ -183,7 +183,6 @@ const booksContainer = document.getElementById("books-container");
 let currentCategory = "all";
 let batchIndex = 0;
 const batchSize = 12;
-const cart = [];
 const bookCache = {};
 const detailsModal = new bootstrap.Modal(
     document.getElementById("detailsModal")
@@ -214,8 +213,8 @@ function renderBooks(books, append = false) {
                 <div class="card-footer gap-1 row mx-1">
                     <button class="btn btn-dark text-light btn-sm view-details col-2" data-id="${book.id}"><i class="bi bi-eye"></i></button>
                     <div class=" col-9 row justify-content-end gap-1"> 
-                    <button class="btn btn-danger btn-sm add-to-cart col-4" data-id="${book.id}"><i class="bi bi-heart-fill"></i></button>
-                    <button class="btn btn-primary btn-sm add-to-cart col-4" data-id="${book.id}"><i class="bi bi-cart-plus"></i></button>
+                    <button class="btn btn-danger btn-sm add-to-cart col-4" data-icon="heart-fill" data-id="${book.id}"><i class="bi bi-heart-fill"></i></button>
+                    <button class="btn btn-primary btn-sm add-to-cart col-4" data-icon="cart-plus" data-id="${book.id}"><i class="bi bi-cart-plus"></i></button>
                     </div>
                 
                     
@@ -312,10 +311,16 @@ function updateAddToCartButtons(bookId) {
         .querySelectorAll(`.add-to-cart[data-id="${bookId}"]`)
         .forEach((btn) => {
             btn.classList.add("added");
-            btn.innerHTML = `<i class="bi bi-check2"></i> Added`;
+            btn.innerHTML = `<i class="bi bi-check2"></i>`;
+            fetch("http://localhost:5000/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookId }),
+                credentials: "include"
+            });
             setTimeout(() => {
                 btn.classList.remove("added");
-                btn.innerHTML = `<i class="bi bi-cart-plus"></i> Add to Cart`;
+                btn.innerHTML = `<i class="bi bi-${btn.dataset.icon}"></i>`;
             }, 1200);
         });
 
@@ -341,10 +346,8 @@ booksContainer.addEventListener("click", (e) => {
     const books = bookCache[currentCategory] || [];
     const book = books.find((b) => b.id === bookId);
 
-    if (e.target.closest(".add-to-cart") && book && !cart.includes(book)) {
-        cart.push(book);
+    if (e.target.closest(".add-to-cart") && book) {
         updateAddToCartButtons(bookId);
-        console.log("Cart:", cart);
     }
 
     if (e.target.closest(".view-details")) {
@@ -374,10 +377,8 @@ document.getElementById("modal-add-to-cart").addEventListener("click", () => {
     const books = bookCache[currentCategory] || [];
     const book = books.find((b) => b.id === bookId);
 
-    if (book && !cart.includes(book)) {
-        cart.push(book);
+    if (book) {
         updateAddToCartButtons(bookId);
-        console.log("Cart:", cart);
     }
 });
 
