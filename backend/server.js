@@ -141,15 +141,15 @@ app.get("/cart", auth, async (req, res) => {
 
 // Add item to cart
 app.post("/cart", auth, async (req, res) => {
-    const { productId, quantity } = req.body;
+    const { productId, } = req.body;
     const user = await User.findById(req.userId);
 
     // Check if item already exists
     const item = user.cart.find(i => i.productId === productId);
     if (item) {
-        item.quantity += quantity;
+        item.quantity++;
     } else {
-        user.cart.push({ productId, quantity });
+        user.cart.push({ productId });
     }
 
     await user.save();
@@ -157,15 +157,14 @@ app.post("/cart", auth, async (req, res) => {
 });
 
 // Remove qunatity of an item from cart
-app.delete("/cart/:productId", auth, async (req, res) => {
+app.patch("/cart/:productId", auth, async (req, res) => {
     const { productId } = req.params;
-    const { quantity } = req.body
     const user = await User.findById(req.userId);
     const item = user.cart.find(i => i.productId === productId);
     if (item) {
-        if (quantity > item.quantity) item.quantity = 0
-        else
-            item.quantity = item.quantity - qunatity;
+        if (item.quantity === 1)
+            return res.status(400).json({ error: "Cannot decrease quantity below 1" });
+        item.quantity--;
         if (item.quantity === 0) {
             user.cart = user.cart.filter(i => i.productId !== productId);
         }
@@ -184,7 +183,6 @@ app.delete("/cart/remove/:productId", auth, async (req, res) => {
 
     res.json(user.cart);
 });
-
 
 // rating
 app.post("/rate", auth, async (req, res) => {
