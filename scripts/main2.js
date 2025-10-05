@@ -38,9 +38,68 @@ fetch("https://gutendex.com/books/")
       link.textContent = "Read Book";
       body.appendChild(link);
 
+      const more = document.createElement("button");
+      more.classList.add("btn", "m-3", "bg-primary");
+      more.textContent = "+";
+      more.style.color = "white";
+
+      const less = document.createElement("button");
+      less.classList.add("btn", "m-3", "bg-danger");
+      less.textContent = "-";
+      less.style.color = "white";
+      let _div = document.createElement("div");
+      _div.classList.add("d-flex", "justify-content-center");
+
+      const remove = document.createElement("button");
+      remove.classList.add("btn", "m-3", "bg-danger", "text-center");
+      remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
+      remove.style.color = "white";
+      _div.append(remove);
+
+      const num = document.createElement("span");
+      num.textContent = "Quantity: 0";
+      num.classList.add("mx-2", "fw-bold");
+
+      body.append(more, num, less, _div);
+
       card.appendChild(body);
       col.appendChild(card);
       container.appendChild(col);
-    }); // نهاية forEach
-  }) // نهاية then
-  .catch((err) => console.error(err)); // إضافة catch لو حصل خطأ
+
+      more.addEventListener("click", () => {
+        let quantity = parseInt(num.textContent.replace("Quantity: ", "")) + 1;
+        num.textContent = `Quantity: ${quantity}`;
+
+        fetch("http://localhost:5000/cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId: book.id, quantity }),
+          credentials: "include",
+        });
+      });
+
+      less.addEventListener("click", () => {
+        let quantity = parseInt(num.textContent.replace("Quantity: ", ""));
+        if (quantity > 0) quantity--;
+        num.textContent = `Quantity: ${quantity}`;
+
+        fetch(`http://localhost:5000/cart/${book.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quantity }),
+          credentials: "include",
+        });
+      });
+
+      remove.addEventListener("click", () => {
+        num.textContent = "Quantity: 0";
+
+        fetch(`http://localhost:5000/cart/${book.id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+      });
+    });
+  })
+  .catch((err) => console.error(err));
+
