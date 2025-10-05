@@ -174,7 +174,7 @@ app.patch("/cart/:productId", auth, async (req, res) => {
     res.json(user.cart);
 });
 
-app.delete("/cart/remove/:productId", auth, async (req, res) => {
+app.delete("/cart/:productId", auth, async (req, res) => {
     const { productId } = req.params;
     const user = await User.findById(req.userId);
 
