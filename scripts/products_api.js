@@ -91,4 +91,4 @@ const getBooksByCategory = async function (category = "all") {
     }
 };
 
-export { allBooks, getBooksByCategory };
+export { allBooks, getBooksByCategory, createBook };

@@ -175,19 +175,26 @@ async function handleWishlist(btn, bookId) {
                 body: JSON.stringify({ productId: bookId }),
                 credentials: "include",
             });
+            if (addedToWishlist.status === 401) {
+                btn.classList.remove("added");
+                btn.innerHTML = `<i class="bi bi-x-circle-fill text-light"></i>`
+                setTimeout(() => {
+                    btn.innerHTML = `<i class="bi bi-heart"></i>`;
+                }, 1200);
+            }
             response = await addedToWishlist.json()
         }
         if (response.status === 500) {
             btn.classList.toggle("added");
             btn.innerHTML = btn.classList.contains("added")
-                ? `<i class="bi bi-heart-fill"></i>`
-                : `<i class="bi bi-heart"></i>`;
+                ? `< i class="bi bi-heart-fill" ></ > `
+                : `< i class="bi bi-heart" ></ > `;
         }
     } catch (e) {
         btn.classList.toggle("added");
         btn.innerHTML = btn.classList.contains("added")
-            ? `<i class="bi bi-heart-fill"></i>`
-            : `<i class="bi bi-heart"></i>`;
+            ? `< i class="bi bi-heart-fill" ></ > `
+            : `< i class="bi bi-heart" ></ > `;
         console.error(e.message)
     }
 }
@@ -254,7 +261,7 @@ booksContainer.addEventListener("click", (e) => {
                     modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
                 }
 
-                
+
                 // Reset rating
                 document
                     .querySelectorAll('#rating-form input[type="radio"]')
