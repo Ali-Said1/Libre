@@ -1,390 +1,236 @@
-// import { allBooks, getBooksByCategory } from "./products_api.js";
-
-// const booksContainer = document.getElementById("books-container");
-// let currentCategory = "all";
-// let batchIndex = 0;
-// const batchSize = 12;
-// const cart = [];
-// const bookCache = {};
-// const detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
-
-// // Strip HTML from description
-// function stripHTML(html){
-//     const div = document.createElement("div");
-//     div.innerHTML = html;
-//     return div.textContent || div.innerText || "";
-// }
-
-// // Render books
-// function renderBooks(books, append=false){
-//     if(!append) booksContainer.innerHTML="";
-
-//     books.forEach(book=>{
-//         const col=document.createElement("div");
-//         col.className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
-
-//         col.innerHTML=`
-//             <div class="card book-card h-100" data-id="${book.id}">
-//                 <img src="${book.thumbnail}" class="card-img-top book-cover" alt="${book.title}">
-//                 <div class="card-body d-flex flex-column">
-//                     <h5 class="card-title" data-id="${book.id}">${book.title}</h5>
-//                     <p class="card-text text-truncate">${book.authors}</p>
-//                 </div>
-//                 <div class="card-footer d-flex justify-content-between">
-//                     <button class="btn btn-danger btn-sm view-details" data-id="${book.id}"><i class="bi bi-eye"></i> View</button>
-//                     <button class="btn btn-primary btn-sm add-to-cart" data-id="${book.id}"><i class="bi bi-cart-plus"></i> Add to Cart</button>
-//                 </div>
-//             </div>
-//         `;
-//         booksContainer.appendChild(col);
-//     });
-// }
-
-// // Prefetch books
-// async function prefetchCategory(category){
-//     if(!bookCache[category]) bookCache[category]=[];
-
-//     if(bookCache[category].length<20){
-//         await getBooksByCategory(category==='all'?'all':category);
-//         const books = category==='all' ? Object.values(allBooks).flat() : allBooks[category];
-//         bookCache[category]=books;
-//     }
-// }
-
-// function prefetchAllCategories(){
-//     Object.keys(allBooks).forEach(cat=>prefetchCategory(cat));
-// }
-
-// // Render next batch
-// function renderNextBatch(){
-//     const books = bookCache[currentCategory] || [];
-//     const start = batchIndex * batchSize;
-//     const end = start + batchSize;
-//     const nextBatch = books.slice(start,end);
-
-//     renderBooks(nextBatch,batchIndex>0);
-//     batchIndex++;
-
-//     const loadMoreBtn = document.getElementById("load-more-btn");
-//     loadMoreBtn.style.display = end>=books.length?'none':'inline-block';
-
-//     if(books.length<end+batchSize) prefetchCategory(currentCategory);
-// }
-
-// // Category filters
-// function createCategoryFilters(){
-//     const container=document.createElement("div");
-//     container.id="category-filters";
-//     container.className="d-flex flex-wrap gap-2 mb-4";
-//     document.getElementById("main-container").prepend(container);
-
-//     const categories=["all",...Object.keys(allBooks)];
-
-//     categories.forEach(cat=>{
-//         const btn=document.createElement("button");
-//         btn.className="btn btn-outline-secondary category-pill";
-//         btn.dataset.category=cat;
-//         btn.innerText=cat.charAt(0).toUpperCase()+cat.slice(1);
-//         if(cat==='all') btn.classList.add("active");
-
-//         btn.addEventListener("click",()=>{
-//             document.querySelectorAll(".category-pill").forEach(b=>b.classList.remove("active"));
-//             btn.classList.add("active");
-//             currentCategory=cat;
-//             batchIndex=0;
-//             prefetchCategory(currentCategory).then(renderNextBatch);
-//         });
-//         container.appendChild(btn);
-//     });
-// }
-
-// // Load More button
-// document.getElementById("load-more-btn").addEventListener("click",()=>renderNextBatch());
-
-// // Function to sync all Add to Cart buttons for a book
-// function updateAddToCartButtons(bookId) {
-//     // Card buttons
-//     document.querySelectorAll(`.add-to-cart[data-id="${bookId}"]`).forEach(btn => {
-//         btn.classList.add("added");
-//         btn.innerHTML = `<i class="bi bi-check2"></i> Added`;
-//         setTimeout(() => {
-//             btn.classList.remove("added");
-//             btn.innerHTML = `<i class="bi bi-cart-plus"></i> Add to Cart`;
-//         }, 1200);
-//     });
-
-//     // Modal button
-//     const modalBtn = document.getElementById("modal-add-to-cart");
-//     if (modalBtn && document.getElementById("details-title").dataset.id === bookId) {
-//         modalBtn.classList.add("added");
-//         modalBtn.innerHTML = `<i class="bi bi-check2"></i> Added`;
-//         setTimeout(() => {
-//             modalBtn.classList.remove("added");
-//             modalBtn.innerHTML = `<i class="bi bi-cart-plus"></i> Add to Cart`;
-//         }, 1200);
-//     }
-// }
-
-// // Card Add to Cart click
-// booksContainer.addEventListener("click", e => {
-//     const card = e.target.closest(".book-card");
-//     if (!card) return;
-//     const bookId = card.dataset.id;
-//     const books = bookCache[currentCategory] || [];
-//     const book = books.find(b => b.id === bookId);
-
-//     if (e.target.closest(".add-to-cart") && book && !cart.includes(book)) {
-//         cart.push(book);
-//         updateAddToCartButtons(bookId);
-//         console.log("Cart:", cart);
-//     }
-
-//     // View Details
-//     if(e.target.closest(".view-details")){
-//         fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-//             .then(res => res.json())
-//             .then(data => {
-//                 const info = data.volumeInfo;
-//                 document.getElementById("details-img").src = info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
-//                 document.getElementById("details-title").innerText = info.title || "No title";
-//                 document.getElementById("details-title").dataset.id = bookId;
-//                 document.getElementById("details-authors").innerText = info.authors ? info.authors.join(", ") : "Unknown Author";
-//                 document.getElementById("details-desc").innerText = stripHTML(info.description || "No description available");
-//                 detailsModal.show();
-//             });
-//     }
-// });
-
-// // Modal Add to Cart click
-// document.getElementById("modal-add-to-cart").addEventListener("click", () => {
-//     const bookId = document.getElementById("details-title").dataset.id;
-//     const books = bookCache[currentCategory] || [];
-//     const book = books.find(b => b.id === bookId);
-
-//     if (book && !cart.includes(book)) {
-//         cart.push(book);
-//         updateAddToCartButtons(bookId);
-//         console.log("Cart:", cart);
-//     }
-// });
-
-// // Initialize
-// function init(){
-//     createCategoryFilters();
-//     prefetchAllCategories();
-//     prefetchCategory(currentCategory).then(renderNextBatch);
-// }
-
-// init();
-
 import { allBooks, getBooksByCategory } from "./products_api.js";
 
 const booksContainer = document.getElementById("books-container");
 let currentCategory = "all";
 let batchIndex = 0;
 const batchSize = 12;
-const cart = [];
 const bookCache = {};
-const detailsModal = new bootstrap.Modal(
-  document.getElementById("detailsModal")
-);
+const detailsModal = new bootstrap.Modal(document.getElementById("detailsModal"));
 
 // Strip HTML from description
 function stripHTML(html) {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  return div.textContent || div.innerText || "";
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || div.innerText || "";
 }
 
 // Render books
 function renderBooks(books, append = false) {
-  if (!append) booksContainer.innerHTML = "";
+    if (!append) booksContainer.innerHTML = "";
 
-  books.forEach((book) => {
-    const col = document.createElement("div");
-    col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
+    books.forEach((book) => {
+        const col = document.createElement("div");
+        col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
 
-    col.innerHTML = `
+        col.innerHTML = `
             <div class="card book-card h-100" data-id="${book.id}">
                 <img src="${book.thumbnail}" class="card-img-top book-cover" alt="${book.title}">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title" data-id="${book.id}">${book.title}</h5>
                     <p class="card-text text-truncate">${book.authors}</p>
                 </div>
-                <div class="card-footer gap-1 row px-3 mx-1">
-                    <button class="btn btn-dark text-light btn-sm view-details col-2" data-id="${book.id}"><i class="bi bi-eye"></i></button>
-                    <div class=" col-9 d-flex justify-content-end gap-1"> 
-                    <button class="btn btn-danger btn-sm add-to-cart col-4" data-id="${book.id}"><i class="bi bi-heart-fill"></i></button>
-                    <button class="btn btn-primary btn-sm add-to-cart col-4" data-id="${book.id}"><i class="bi bi-cart-plus"></i></button>
+                <div class="card-footer gap-1 row mx-1">
+                    <button class="btn btn-dark text-light btn-sm view-details col-2" data-id="${book.id}">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <div class="col-9 row justify-content-end gap-1"> 
+                        <button class="btn btn-danger btn-sm wishlist-btn col-4" data-id="${book.id}">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                        <button class="btn btn-primary btn-sm add-to-cart col-4" data-id="${book.id}">
+                            <i class="bi bi-cart-plus"></i>
+                        </button>
                     </div>
-                
-                    
                 </div>
             </div>
         `;
-    booksContainer.appendChild(col);
-  });
+        booksContainer.appendChild(col);
+    });
 }
 
 // Prefetch books for category
 async function prefetchCategory(category) {
-  if (!bookCache[category]) bookCache[category] = [];
-  await getBooksByCategory(category === "all" ? "all" : category);
-  const books =
-    category === "all" ? Object.values(allBooks).flat() : allBooks[category];
-  bookCache[category] = books;
+    if (!bookCache[category]) bookCache[category] = [];
+    await getBooksByCategory(category);
+    const books = category === "all" ? Object.values(allBooks).flat() : allBooks[category];
+    bookCache[category] = books;
 }
 
 // Prefetch next batch in background
 async function prefetchNextBatch() {
-  const books = bookCache[currentCategory] || [];
-  const nextStart = (batchIndex + 1) * batchSize;
-  if (books.length <= nextStart) {
-    await prefetchCategory(currentCategory);
-  }
+    const books = bookCache[currentCategory] || [];
+    const nextStart = (batchIndex + 1) * batchSize;
+    if (books.length <= nextStart) {
+        await prefetchCategory(currentCategory);
+    }
 }
 
 // Render next batch
 async function renderNextBatch() {
-  const books = bookCache[currentCategory] || [];
-  const start = batchIndex * batchSize;
-  const end = start + batchSize;
+    const books = bookCache[currentCategory] || [];
+    const start = batchIndex * batchSize;
+    const end = start + batchSize;
 
-  // If no books, fetch until we get some
-  if (books.length < end) {
-    await prefetchCategory(currentCategory);
-  }
+    if (books.length < end) {
+        await prefetchCategory(currentCategory);
+    }
 
-  const nextBatch = bookCache[currentCategory].slice(start, end);
-  if (nextBatch.length === 0) {
-    console.log("No books available yet, trying again...");
-    await prefetchCategory(currentCategory);
-    return renderNextBatch(); // retry
-  }
+    const nextBatch = bookCache[currentCategory].slice(start, end);
 
-  renderBooks(nextBatch, batchIndex > 0);
-  batchIndex++;
+    if (nextBatch.length === 0) {
+        console.log("No books available yet, trying again...");
+        await prefetchCategory(currentCategory);
+        return renderNextBatch();
+    }
 
-  // Prefetch next batch in background
-  prefetchNextBatch();
+    renderBooks(nextBatch, batchIndex > 0);
+    batchIndex++;
+    prefetchNextBatch();
 
-  document.getElementById("load-more-btn").style.display = "inline-block";
+    document.getElementById("load-more-btn").style.display = "inline-block";
 }
 
 // Category filters
 function createCategoryFilters() {
-  const container = document.createElement("div");
-  container.id = "category-filters";
-  container.className = "d-flex flex-wrap gap-2 mb-4";
-  document.getElementById("main-container").prepend(container);
+    const container = document.createElement("div");
+    container.id = "category-filters";
+    container.className = "d-flex flex-wrap gap-2 mb-4";
+    document.getElementById("main-container").prepend(container);
 
-  const categories = ["all", ...Object.keys(allBooks)];
+    const categories = ["all", ...Object.keys(allBooks)];
 
-  categories.forEach((cat) => {
-    const btn = document.createElement("button");
-    btn.className = "btn btn-outline-secondary category-pill";
-    btn.dataset.category = cat;
-    btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
-    if (cat === "all") btn.classList.add("active");
+    categories.forEach((cat) => {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-secondary category-pill";
+        btn.dataset.category = cat;
+        btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
+        if (cat === "all") btn.classList.add("active");
 
-    btn.addEventListener("click", () => {
-      document
-        .querySelectorAll(".category-pill")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentCategory = cat;
-      batchIndex = 0;
-      renderNextBatch();
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".category-pill").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentCategory = cat;
+            batchIndex = 0;
+            renderNextBatch();
+        });
+        container.appendChild(btn);
     });
-    container.appendChild(btn);
-  });
 }
 
 // Load More button
 document
-  .getElementById("load-more-btn")
-  .addEventListener("click", () => renderNextBatch());
+    .getElementById("load-more-btn")
+    .addEventListener("click", () => renderNextBatch());
 
-// Function to sync all Add to Cart buttons for a book
-function updateAddToCartButtons(bookId) {
-  document
-    .querySelectorAll(`.add-to-cart[data-id="${bookId}"]`)
-    .forEach((btn) => {
-      btn.classList.add("added");
-      btn.innerHTML = `<i class="bi bi-check2"></i> Added`;
-      setTimeout(() => {
-        btn.classList.remove("added");
-        btn.innerHTML = `<i class="bi bi-cart-plus"></i> Add to Cart`;
-      }, 1200);
+// Handle Add to Cart
+function handleAddToCart(btn, bookId) {
+    btn.classList.add("added");
+    btn.innerHTML = `<i class="bi bi-check2"></i>`;
+    fetch("http://localhost:5000/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId }),
+        credentials: "include"
     });
-
-  const modalBtn = document.getElementById("modal-add-to-cart");
-  if (
-    modalBtn &&
-    document.getElementById("details-title").dataset.id === bookId
-  ) {
-    modalBtn.classList.add("added");
-    modalBtn.innerHTML = `<i class="bi bi-check2"></i> Added`;
     setTimeout(() => {
-      modalBtn.classList.remove("added");
-      modalBtn.innerHTML = `<i class="bi bi-cart-plus"></i> Add to Cart`;
+        btn.classList.remove("added");
+        btn.innerHTML = `<i class="bi bi-cart-plus"></i>`;
     }, 1200);
-  }
 }
 
-// Card Add to Cart click
+// Handle Wishlist
+function handleWishlist(btn) {
+    btn.classList.toggle("added");
+    btn.innerHTML = btn.classList.contains("added")
+        ? `<i class="bi bi-heart-fill"></i>`
+        : `<i class="bi bi-heart"></i>`;
+}
+
+// Card click handling
 booksContainer.addEventListener("click", (e) => {
-  const card = e.target.closest(".book-card");
-  if (!card) return;
-  const bookId = card.dataset.id;
-  const books = bookCache[currentCategory] || [];
-  const book = books.find((b) => b.id === bookId);
+    const card = e.target.closest(".book-card");
+    if (!card) return;
+    const bookId = card.dataset.id;
+    const books = bookCache[currentCategory] || [];
+    const book = books.find((b) => b.id === bookId);
+    if (!book) return;
 
-  if (e.target.closest(".add-to-cart") && book && !cart.includes(book)) {
-    cart.push(book);
-    updateAddToCartButtons(bookId);
-    console.log("Cart:", cart);
-  }
+    // Add to Cart
+    if (e.target.closest(".btn-primary")) {
+        handleAddToCart(e.target.closest(".btn-primary"), bookId);
+    }
 
-  if (e.target.closest(".view-details")) {
-    fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const info = data.volumeInfo;
-        document.getElementById("details-img").src =
-          info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
-        document.getElementById("details-title").innerText =
-          info.title || "No title";
-        document.getElementById("details-title").dataset.id = bookId;
-        document.getElementById("details-authors").innerText = info.authors
-          ? info.authors.join(", ")
-          : "Unknown Author";
-        document.getElementById("details-desc").innerText = stripHTML(
-          info.description || "No description available"
-        );
-        detailsModal.show();
-      });
-  }
+    // Wishlist
+    if (e.target.closest(".btn-danger")) {
+        handleWishlist(e.target.closest(".btn-danger"));
+    }
+
+    // View details
+    if (e.target.closest(".view-details")) {
+        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                const info = data.volumeInfo;
+
+                document.getElementById("details-img").src =
+                    info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
+                const titleEl = document.getElementById("details-title");
+                titleEl.innerText = info.title || "No title";
+                titleEl.dataset.id = bookId;
+                document.getElementById("details-authors").innerText = info.authors
+                    ? info.authors.join(", ")
+                    : "Unknown Author";
+                document.getElementById("details-desc").innerText = stripHTML(
+                    info.description || "No description available"
+                );
+
+                // Sync modal wishlist state with card
+                const modalWishlistBtn = document.getElementById("modal-wishlist-btn");
+                const cardWishlistBtn = card.querySelector(".wishlist-btn");
+                if (cardWishlistBtn?.classList.contains("added")) {
+                    modalWishlistBtn.classList.add("added");
+                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+                } else {
+                    modalWishlistBtn.classList.remove("added");
+                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+                }
+
+                detailsModal.show();
+            });
+    }
 });
 
-// Modal Add to Cart click
+// Modal Add to Cart
 document.getElementById("modal-add-to-cart").addEventListener("click", () => {
-  const bookId = document.getElementById("details-title").dataset.id;
-  const books = bookCache[currentCategory] || [];
-  const book = books.find((b) => b.id === bookId);
+    const bookId = document.getElementById("details-title").dataset.id;
+    handleAddToCart(document.getElementById("modal-add-to-cart"), bookId);
+});
 
-  if (book && !cart.includes(book)) {
-    cart.push(book);
-    updateAddToCartButtons(bookId);
-    console.log("Cart:", cart);
-  }
+// Modal Wishlist
+document.getElementById("modal-wishlist-btn").addEventListener("click", () => {
+    const modalBtn = document.getElementById("modal-wishlist-btn");
+    const bookId = document.getElementById("details-title").dataset.id;
+    const cardWishlistBtn = document.querySelector(`.book-card[data-id="${bookId}"] .wishlist-btn`);
+
+    handleWishlist(modalBtn);
+
+    // Sync card state
+    if (cardWishlistBtn) {
+        if (modalBtn.classList.contains("added")) {
+            cardWishlistBtn.classList.add("added");
+            cardWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+        } else {
+            cardWishlistBtn.classList.remove("added");
+            cardWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+        }
+    }
 });
 
 // Initialize
 async function init() {
-  createCategoryFilters();
-  await prefetchCategory(currentCategory); // fetch initial batch
-  renderNextBatch(); // render immediately
+    createCategoryFilters();
+    await prefetchCategory(currentCategory);
+    renderNextBatch();
 }
 
 init();
