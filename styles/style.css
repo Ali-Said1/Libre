@@ -2,6 +2,7 @@
 html,
 body {
   height: 100%;
+  overflow: hidden;
 }
 * {
   text-decoration: none;
@@ -20,7 +21,7 @@ h3 {
   font-size: 1.1rem;
 }
 .animat {
-  width: 90vw;
+  width: 70 vw;
   height: 20vh;
   color: rgb(224, 32, 32);
   font-family: "Creepster";
@@ -38,4 +39,47 @@ h3 {
 .lets a {
   color: inherit;
   text-decoration: none;
+}
+.foot {
+  opacity: 0;
+  transform: scale(1.5) translateY(20px);
+  animation: text 2.5s forwards ease-in-out;
+  animation-delay: 2s;
+  color: rgb(224, 32, 32);
+}
+
+@keyframes text {
+  0% {
+    opacity: 0;
+    transform: scale(3) translateY(20px);
+    letter-spacing: 2px;
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(2) translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.3) translateY(0);
+    letter-spacing: normal;
+  }
+}
+
+@media (max-width: 768px) {
+  @keyframes text {
+    0% {
+      opacity: 0;
+      transform: scale(1.8) translateY(10px);
+      letter-spacing: 1px;
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.4) translateY(3px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(0.9) translateY(0);
+      letter-spacing: normal;
+    }
+  }
 }
