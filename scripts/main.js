@@ -7,9 +7,3 @@ const interval = setInterval(() => {
     i++;
   } else clearInterval(interval);
 }, 140);
-fetch("https://gutendex.com/books/")
-  .then((t) => t.json()) 
-  .then((e) => {
-    console.log(e);
-  })
-  .catch((err) => console.error(err));

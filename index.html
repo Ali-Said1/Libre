@@ -4,14 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+  <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="node_modules/bootstrap-icons/font/bootstrap-icons.min.css" />
   <link rel="stylesheet" href="styles/style.css" />
+  <link rel="shortcut icon" href="assets/libre.ico" type="image/x-icon">
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="scripts/nav.js" defer></script>
+  <script src="scripts/main.js" defer></script>
+  <title>Libre - Homepage</title>
 </head>
-<script src="scripts/main.js" defer></script>
-<script src="scripts/nav.js" defer></script>
 
 <body>
   <div class="home container h-100 bg-white w-100">
@@ -40,9 +41,6 @@
       </h4>
     </div>
   </div>
-  <script>
-    fetch('http://localhost:5000/me', { credentials: 'include' }).then(res => res.json()).then(body => console.log(body))
-  </script>
 </body>
 
 </html>

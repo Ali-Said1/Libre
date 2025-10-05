@@ -1,73 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile</title>
+    <title>Libre - Profile</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/profile.css">
+    <link rel="shortcut icon" href="assets/libre.ico" type="image/x-icon">
+    <script type="module" src="scripts/nav.js"></script>
+    <script defer src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 
 </head>
+
 <body class="bg-light d-flex justify-content-center">
 
-  <div class="card shadow p-4 profile-container my-5">
+    <div class="card shadow p-4 profile-container my-5">
 
 
-    <h1 class="text-center my-4 fw-bold">Profile</h1>
+        <h1 class="text-center my-4 fw-bold">Profile</h1>
 
-    <hr class="border-black border-5 rounded-3">
+        <hr class="border-black border-5 rounded-3">
 
-    <h2 class="mt-3 mb-3 text-center">Account Information</h2>
+        <h2 class="mt-3 mb-3 text-center">Account Information</h2>
 
-    <div class="p-3 bg-white rounded-4 shadow-sm mb-4">
-    <div class="d-flex flex-column align-items-start">
+        <div class="p-3 bg-white rounded-4 shadow-sm mb-4">
+            <div class="d-flex flex-column align-items-start">
 
-        <div class="w-100 mb-5">
-        <p class="fw-bold text-muted fs-4">Name</p>
-            <div class="p-3 bg-light border text-dark fs-5" id="username">
-                Marawan Abdulrahim
+                <div class="w-100 mb-5">
+                    <p class="fw-bold text-muted fs-4">Name</p>
+                    <div class="p-3 bg-light border text-dark fs-5" id="username">
+                        Marawan Abdulrahim
+                    </div>
+                </div>
+
+                <div class="w-100">
+                    <p class="fw-bold text-muted fs-4">Email</p>
+                    <div class="p-3 bg-light border text-dark fs-5" id="useremail">
+                        marawan@example.com
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="w-100">
-        <p class="fw-bold text-muted fs-4">Email</p>
-            <div class="p-3 bg-light border text-dark fs-5" id="useremail">
-                marawan@example.com
-            </div>
+        <hr class="border-black border-5 rounded-3">
+
+        <h2 class="mt-3 mb-3 text-center">Change Password</h2>
+        <div class="alert alert-danger mt-3 mb-3 text-center" id="invalidCurrentPassword">
+            <h5>Current password is incorrect.</h5>
         </div>
-
-    </div>
-    </div>
-
-    <hr class="border-black border-5 rounded-3">
-
-    <h2 class="mt-3 mb-3 text-center">Change Password</h2>
-    <div class="alert alert-danger mt-3 mb-3 text-center" id="invalidCurrentPassword">
-        <h5>Current password is incorrect.</h5>
-    </div>
-    <form>
-        <div class="mb-3">
-            <h3 class="form-label">Current Password</h3>
-            <input type="password" id="currentPassword" class="form-control border-1 border-black is-">
-            <div class="invalid-feedback">
+        <form>
+            <div class="mb-3">
+                <h3 class="form-label">Current Password</h3>
+                <input type="password" id="currentPassword" class="form-control border-1 border-black is-">
+                <div class="invalid-feedback">
                     <p>The entered current password is not correct</p>
+                </div>
             </div>
-        </div>
 
-        <div class="mb-3">
-            <h3 class="form-label">New Password</h3>
-            <input type="password" id="newPassword" class="is-invalid form-control border-1 border-black">
-            <div class="invalid-feedback">
+            <div class="mb-3">
+                <h3 class="form-label">New Password</h3>
+                <input type="password" id="newPassword" class="is-invalid form-control border-1 border-black">
+                <div class="invalid-feedback">
                     <h5>Password must be at least 8 characters and contains one uppercase letter, one number, and one
                         special char</h5>
+                </div>
             </div>
-        </div>
 
-        <button id="updatePasswordBtn" class="btn btn-primary w-100">Update Password</button>
-    </form>
-  </div>
-
-    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <button id="updatePasswordBtn" class="btn btn-primary w-100">Update Password</button>
+        </form>
+    </div>
 </body>
+
 </html>

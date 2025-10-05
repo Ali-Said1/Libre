@@ -1,4 +1,10 @@
 import { createBook } from "./products_api.js"
+import authUser from "./authUser.js";
+
+const response = await authUser();
+if (!response.ok) {
+    window.location.href = "/signin.html"
+}
 
 const noBooksInWishlist = document.querySelector("#noWishlist");
 async function getWishlist() {
