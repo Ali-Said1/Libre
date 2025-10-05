@@ -30,16 +30,16 @@
             <div class="d-flex flex-column align-items-start">
 
         <div class="w-100 mb-5">
-        <p class="fw-bold text-muted fs-4">Name</p>
-            <div class="p-3 bg-light border text-dark fs-5" id="username">
-                Marawan Abdulrahim
+        <p class="fw-bold text-muted fs-4" >Name</p>
+            <div class="p-3 bg-light border text-dark fs-5">
+                <p id="username"></p>
             </div>
         </div>
 
         <div class="w-100">
         <p class="fw-bold text-muted fs-4">Email</p>
-            <div class="p-3 bg-light border text-dark fs-5" id="useremail">
-                marawan@example.com
+            <div class="p-3 bg-light border text-dark fs-5">
+                <p id="useremail"></p>
             </div>
         </div>
 
@@ -49,7 +49,10 @@
         <hr class="border-black border-5 rounded-3">
 
     <h2 class="mt-3 mb-3 text-center">Change Password</h2>
-    <div class="alert alert-danger mt-3 mb-3 text-center" id="invalidCurrentPassword">
+    <div class="alert alert-success mt-3 mb-3 text-center d-none" id="invalidCurrentPassword">
+        <h5>Password Changed</h5>
+    </div>
+    <div class="alert alert-danger mt-3 mb-3 text-center" id="passwordChanged">
         <h5>Current password is incorrect.</h5>
     </div>
     <form>
