@@ -157,8 +157,8 @@ app.post("/cart", auth, async (req, res) => {
 });
 
 // Remove qunatity of an item from cart
-app.patch("/cart/:productId", auth, async (req, res) => {
-    const { productId } = req.params;
+app.patch("/cart", auth, async (req, res) => {
+    const { productId } = req.body;
     const user = await User.findById(req.userId);
     const item = user.cart.find(i => i.productId === productId);
     if (item) {
@@ -174,8 +174,8 @@ app.patch("/cart/:productId", auth, async (req, res) => {
     res.json(user.cart);
 });
 
-app.delete("/cart/:productId", auth, async (req, res) => {
-    const { productId } = req.params;
+app.delete("/cart", auth, async (req, res) => {
+    const { productId } = req.body;
     const user = await User.findById(req.userId);
 
     user.cart = user.cart.filter(i => i.productId !== productId);
@@ -288,8 +288,8 @@ app.get("/wishlist", auth, async (req, res) => {
     try {
         const user = await User.findById(req.userId).select("wishlist");
         if (!user) return res.status(404).json({ error: "User not found" });
-
-        res.json(user.wishlist);
+        const wishlistReturn = user.wishlist.map(item => item.productId)
+        res.json(wishlistReturn);
     } catch (err) {
         res.status(500).json({ error: "Server error" });
     }

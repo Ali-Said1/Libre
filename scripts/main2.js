@@ -1,105 +1,165 @@
-const container = document.getElementById("bookContainer");
+import { createBook } from "./products_api.js";
+const cartContainer = document.getElementById("bookContainer");
+const noBooksInCart = document.querySelector("#noCart");
+async function getCart() {
+  const reponse = await fetch("http://localhost:5000/cart", {
+    method: "GET",
+    credentials: 'include'
+  });
+  const body = await reponse.json();
+  return body;
 
-fetch("https://gutendex.com/books/")
-  .then((res) => res.json())
-  .then((data) => {
-    const booksData = data.results;
+}
 
-    booksData.forEach((book) => {
-      const col = document.createElement("div");
-      col.classList.add("col-lg-4", "col-md-6", "col-sm-12");
 
-      const card = document.createElement("div");
-      card.classList.add("card");
-      card.style.width = "100%";
+async function renderCart() {
+  try {
+    const cart = await getCart();
+    if (cart.length === 0) {
+      noBooksInCart.classList.remove("d-none");
+    } else {
+      noBooksInCart.classList.add("d-none");
+      cartContainer.innerHTML = ""
+      cart.forEach(async ({ productId: bookId, quantity }) => {
+        const googleBooksResponse = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
+        const bookData = await googleBooksResponse.json()
+        const book = createBook(bookData);
+        renderBook(book, quantity)
 
-      const img = document.createElement("img");
-      img.src = book.formats["image/jpeg"];
-      img.classList.add("card-img-top");
-      img.alt = book.title;
-      card.appendChild(img);
+      })
+      /*Book response from createBook function:
+      {
+          id,
+          title,
+          authors,
+          description,
+          publishedDate,
+          thumbnail: `http://books.google.com/books/content?id=${bookData.id}&printsec=frontcover&img=1&zoom=1`,
+      }
+      */
+    }
+  }
+  catch (e) {
+    console.error(e.message)
+    noBooksInCart.classList.remove("d-none");
 
-      const body = document.createElement("div");
-      body.classList.add("card-body");
+  }
+}
 
-      const title = document.createElement("h5");
-      title.classList.add("card-title");
-      title.textContent = book.title;
-      body.appendChild(title);
+function renderBook(bookData, quantity) {
+  const col = document.createElement("div");
+  col.classList.add("col-lg-4", "col-md-6", "col-sm-12", "mb-4");
 
-      const author = document.createElement("p");
-      author.classList.add("card-text");
-      author.textContent = "By " + book.authors.map((a) => a.name).join(", ");
-      body.appendChild(author);
+  const card = document.createElement("div");
+  card.classList.add("card", "h-100", "shadow-sm");
 
-      const link = document.createElement("a");
-      link.classList.add("btn", "btn-primary");
-      link.href = book.formats["text/html"];
-      link.textContent = "Read Book";
-      body.appendChild(link);
+  const img = document.createElement("img");
+  img.src = bookData.thumbnail;
+  img.classList.add("card-img-top", "img-fluid");
+  img.alt = bookData.title;
+  card.appendChild(img);
 
-      const more = document.createElement("button");
-      more.classList.add("btn", "m-3", "bg-primary");
-      more.textContent = "+";
-      more.style.color = "white";
+  const body = document.createElement("div");
+  body.classList.add("card-body", "d-flex", "flex-column");
 
-      const less = document.createElement("button");
-      less.classList.add("btn", "m-3", "bg-danger");
-      less.textContent = "-";
-      less.style.color = "white";
-      let _div = document.createElement("div");
-      _div.classList.add("d-flex", "justify-content-center");
+  const title = document.createElement("h5");
+  title.classList.add("card-title");
+  title.textContent = bookData.title;
+  body.appendChild(title);
 
-      const remove = document.createElement("button");
-      remove.classList.add("btn", "m-3", "bg-danger", "text-center");
-      remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
-      remove.style.color = "white";
-      _div.append(remove);
+  const author = document.createElement("p");
+  author.classList.add("card-text", "text-muted", "mb-3");
+  author.textContent = "By " + bookData.authors.map((a) => a.name).join(", ");
+  body.appendChild(author);
 
-      const num = document.createElement("span");
-      num.textContent = "Quantity: 0";
-      num.classList.add("mx-2", "fw-bold");
+  const link = document.createElement("a");
+  link.classList.add("btn", "btn-primary", "mb-3");
+  link.href = bookData.thumbnail;
+  link.textContent = "Read Book";
+  body.appendChild(link);
 
-      body.append(more, num, less, _div);
+  // Controls section
+  const controls = document.createElement("div");
+  controls.classList.add("d-flex", "align-items-center", "justify-content-between", "mt-3");
 
-      card.appendChild(body);
-      col.appendChild(card);
-      container.appendChild(col);
+  // Quantity wrapper ( - Quantity + )
+  const qtyWrapper = document.createElement("div");
+  qtyWrapper.classList.add("d-flex", "align-items-center");
 
-      more.addEventListener("click", () => {
-        let quantity = parseInt(num.textContent.replace("Quantity: ", "")) + 1;
-        num.textContent = `Quantity: ${quantity}`;
+  const less = document.createElement("button");
+  less.classList.add("btn", "btn-outline-danger", "me-2");
+  less.textContent = "–";
 
-        fetch("http://localhost:5000/cart", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId: book.id, quantity }),
-          credentials: "include",
-        });
-      });
+  const num = document.createElement("span");
+  num.textContent = `Quantity: ${quantity}`;
+  num.classList.add("fw-bold");
 
-      less.addEventListener("click", () => {
-        let quantity = parseInt(num.textContent.replace("Quantity: ", ""));
-        if (quantity > 0) quantity--;
-        num.textContent = `Quantity: ${quantity}`;
+  const more = document.createElement("button");
+  more.classList.add("btn", "btn-outline-primary", "ms-2");
+  more.textContent = "+";
 
-        fetch(`http://localhost:5000/cart/${book.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ quantity }),
-          credentials: "include",
-        });
-      });
+  qtyWrapper.append(less, num, more);
 
-      remove.addEventListener("click", () => {
-        num.textContent = "Quantity: 0";
+  // Remove (trash) button
+  const remove = document.createElement("button");
+  remove.classList.add("btn", "btn-sm", "btn-danger");
+  remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
 
-        fetch(`http://localhost:5000/cart/${book.id}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-      });
+  controls.append(qtyWrapper, remove);
+
+  body.appendChild(controls);
+  card.appendChild(body);
+  col.appendChild(card);
+  cartContainer.appendChild(col);
+
+
+  more.addEventListener("click", async () => {
+    let quantity = parseInt(num.textContent.replace("Quantity: ", "")) + 1;
+    num.textContent = `Quantity: ${quantity}`;
+
+    const response = await fetch("http://localhost:5000/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: bookData.id }),
+      credentials: "include",
     });
-  })
-  .catch((err) => console.error(err));
+    if (!response.ok) {
+      num.textContent = `Quantity: ${quantity - 1}`;
+    }
+  });
 
+  less.addEventListener("click", async () => {
+    let quantity = parseInt(num.textContent.replace("Quantity: ", ""));
+    if (quantity > 0) quantity--;
+    num.textContent = `Quantity: ${quantity}`;
+    if (quantity === 0) {
+      col.remove()
+      deletebook(bookData)
+    }
+    const response = await fetch(`http://localhost:5000/cart`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId: bookData.id }),
+      credentials: "include",
+    });
+    if (!response.ok)
+      num.textContent = `Quantity: ${quantity + 1}`
+
+  });
+
+  remove.addEventListener("click", () => deletebook(bookData));
+
+}
+
+async function deletebook(bookData) {
+  await fetch(`http://localhost:5000/cart`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productId: bookData.id }),
+    credentials: "include",
+  });
+  renderCart()
+
+}
+
+renderCart()

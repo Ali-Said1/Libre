@@ -1,7 +1,7 @@
 let nv = `
 <ul class="nv nav-pills p-2 w-100 d-flex align-items-center list-unstyled" style="color: rgb(224, 32, 32) !important;">
   <li class="nav-item mx-3">
-    <a class="nav-link" href="home.html">Home</a>
+    <a class="nav-link" href="index.html">Home</a>
   </li>
  <li class="nav-item mx-3">
     <a class="nav-link" href="wishlist.html">Wishlist</a>

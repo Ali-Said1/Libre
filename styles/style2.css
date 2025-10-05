@@ -1,5 +1,5 @@
 body {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .card-img-top {
@@ -28,14 +28,17 @@ body {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
 }
+
 .cart h2 {
   display: inline-block;
   position: relative;
@@ -47,8 +50,8 @@ body {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(50%);
   }
 }
-
