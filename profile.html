@@ -11,6 +11,7 @@
     <link rel="shortcut icon" href="assets/libre.ico" type="image/x-icon">
     <script type="module" src="scripts/nav.js"></script>
     <script defer src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="scripts/profile.js"></script>
 
 
 </head>
@@ -52,26 +53,23 @@
     <div class="alert alert-success mt-3 mb-3 text-center d-none" id="invalidCurrentPassword">
         <h5>Password Changed</h5>
     </div>
-    <div class="alert alert-danger mt-3 mb-3 text-center" id="passwordChanged">
+    <div class="alert alert-danger mt-3 mb-3 text-center d-none" id="passwordChanged">
         <h5>Current password is incorrect.</h5>
     </div>
     <form>
         <div class="mb-3">
             <h3 class="form-label">Current Password</h3>
-            <input type="password" id="currentPassword" class="form-control border-1 border-black is-">
-            <div class="invalid-feedback">
-                    <p>The entered current password is not correct</p>
-                </div>
-            </div>
+            <input type="password" id="currentPassword" class="form-control border-1 border-black">
+        </div>
 
-            <div class="mb-3">
-                <h3 class="form-label">New Password</h3>
-                <input type="password" id="newPassword" class="is-invalid form-control border-1 border-black">
-                <div class="invalid-feedback">
-                    <h5>Password must be at least 8 characters and contains one uppercase letter, one number, and one
-                        special char</h5>
-                </div>
+        <div class="mb-3">
+            <h3 class="form-label">New Password</h3>
+            <input type="password" id="newPassword" class="form-control border-1 border-black">
+            <div class="invalid-feedback">
+                <h5>Password must be at least 8 characters and contains one uppercase letter, one number, and one
+                    special char</h5>
             </div>
+        </div>
 
             <button id="updatePasswordBtn" class="btn btn-primary w-100">Update Password</button>
         </form>
