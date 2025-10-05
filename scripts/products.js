@@ -133,11 +133,11 @@ async function handleAddToCart(btn, bookId) {
         const addedToCart = await fetch("http://localhost:5000/cart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ bookId }),
+            body: JSON.stringify({ productId: bookId }),
             credentials: "include",
         });
         const response = await addedToCart.json()
-        if (response.ok) {
+        if (addedToCart.ok) {
             btn.classList.add("added");
             btn.innerHTML = `<i class="bi bi-check2"></i>`;
         } else
@@ -172,7 +172,7 @@ async function handleWishlist(btn, bookId) {
             const addedToWishlist = await fetch("http://localhost:5000/wishlist", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bookId }),
+                body: JSON.stringify({ productId: bookId }),
                 credentials: "include",
             });
             response = await addedToWishlist.json()
@@ -217,7 +217,6 @@ booksContainer.addEventListener("click", (e) => {
             .then((res) => res.json())
             .then((data) => {
                 const info = data.volumeInfo;
-                console.log(data)
                 document.getElementById("details-img").src =
                     info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
                 const titleEl = document.getElementById("details-title");
@@ -239,7 +238,7 @@ booksContainer.addEventListener("click", (e) => {
                         if (!rating.avg) {
                             document.getElementById("details-rating").innerText = "No rating available"
                         }
-                        document.getElementById("details-rating").innerText = `${rating.avg}/5.0, (by ${rating.count} users)`
+                        document.getElementById("details-rating").innerText = `${rating.average}/5.0, (by ${rating.count} users)`
                     })
                     .catch(_ => document.getElementById("details-rating").innerText = "No rating available")
 
@@ -255,10 +254,26 @@ booksContainer.addEventListener("click", (e) => {
                     modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
                 }
 
+                
                 // Reset rating
                 document
                     .querySelectorAll('#rating-form input[type="radio"]')
                     .forEach((r) => (r.checked = false));
+                fetch(`http://localhost:5000/rate/user/${bookId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include'
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.rating) {
+                            const radio = document.querySelector(
+                                `#rating-form input[type="radio"][value="${data.rating}"]`
+                            );
+                            if (radio) radio.checked = true; // ✅ select the one that matches
+                        }
+                    })
+                    .catch(_ => document.getElementById("details-rating").innerText = "No rating available")
 
                 detailsModal.show();
             });
@@ -279,7 +294,7 @@ document.getElementById("modal-wishlist-btn").addEventListener("click", () => {
         `.book-card[data-id="${bookId}"] .wishlist-btn`
     );
 
-    handleWishlist(modalBtn);
+    handleWishlist(modalBtn, bookId);
 
     if (cardWishlistBtn) {
         if (modalBtn.classList.contains("added")) {
@@ -303,9 +318,10 @@ document
             fetch("http://localhost:5000/rate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bookId, rating }),
+                body: JSON.stringify({ productId: bookId, rating }),
                 credentials: "include",
-            });
+            })
+                .catch(() => document.querySelectorAll('#rating-form input[type="radio"]').forEach(r => r.checked = false))
         });
     });
 

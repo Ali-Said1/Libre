@@ -153,7 +153,7 @@ app.post("/cart", auth, async (req, res) => {
     }
 
     await user.save();
-    res.json(user.cart);
+    res.status(200).json(user.cart);
 });
 
 // Remove qunatity of an item from cart
@@ -218,7 +218,7 @@ app.delete("/rate", auth, async (req, res) => {
     }
 });
 
-app.get("/rating/:productId", async (req, res) => {
+app.get("/rate/:productId", async (req, res) => {
     const { productId } = req.params;
 
     const ratings = await Rating.find({ productId });
@@ -228,6 +228,15 @@ app.get("/rating/:productId", async (req, res) => {
         ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length;
 
     res.json({ average: avg, count: ratings.length });
+});
+
+app.get("/rate/user/:productId", auth, async (req, res) => {
+    const { productId } = req.params;
+
+    const rating = await Rating.findOne({ userId: req.userId, productId });
+    if (!rating) return res.json({ rating: 0 });
+
+    res.json({ rating: rating.rating });
 });
 
 // wishlist
@@ -285,5 +294,18 @@ app.get("/wishlist", auth, async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 });
+
+// app.get("/wishlist/user", auth, async (req, res) => {
+//     const { productId, } = req.body;
+//     const user = await User.findById(req.userId);
+
+//     // Check if item already exists
+//     const item = user.wishlist.find(i => i.productId === productId);
+//     if (item) {
+//         res.status(200).json(true)
+//     } else {
+//         res.status(404).json(false)
+//     };
+// });
 app.listen(5000, () => console.log("Server running on http://localhost:5000"));
 
