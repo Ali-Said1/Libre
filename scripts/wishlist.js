@@ -1,14 +1,10 @@
-/*<div class="card col-12 col-sm-6 col-lg-4 mx-auto" style="width: 18rem;">
-    <img src="..." class="card-img-top" alt="...">
-    <div class="card-body">
-        <h4 class="card-title text-center">Book title</h4>
-    </div>
-    <button class="btn btn-danger text-center">Remove</button>
-</img></div> */
+import { createBook } from "./products_api.js"
 
 const noBooksInWishlist = document.querySelector("#noWishlist");
 async function getWishlist() {
-    const reponse = await fetch("http://localhost:3000/wishlist");
+    const reponse = await fetch("http://localhost:3000/wishlist",{
+        method:"GET"
+    });
     const body = await reponse.json();
     return body;
 }
@@ -20,34 +16,64 @@ async function renderWishlist() {
         } else {
             noBooksInWishlist.classList.add("d-none");
             const wishlistContainer = document.querySelector("#wishlistContainer");
-            for (const item of wishlist) {
-                const itemContainer = document.createElement("div");
-                itemContainer.setAttribute("class", "card col-12 col-sm-6 col-lg-4 mx-auto");
-                itemContainer.style.width = "18rem";
-
+            for (const bookIdObject of wishlist) {
+                const bookId = bookIdObject.id
+                const googleBooksResponse = await fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`);
+                const bookData = await googleBooksResponse.json()
+                const { id, volumeInfo: { title, authors, description, publishedDate } } = bookData;
+                const requiredData = {
+                    id,
+                    volumeInfo: {
+                        title,
+                        authors,
+                        description,
+                        publishedDate
+                    }
+                };
+                const book = createBook(requiredData); 
+                console.log(book);
+                /*Book response from createBook function:
+                {
+                    id,
+                    title,
+                    authors,
+                    description,
+                    publishedDate,
+                    thumbnail: `http://books.google.com/books/content?id=${bookData.id}&printsec=frontcover&img=1&zoom=1`,
+                }
+                */ 
+                const bookContainer = document.createElement("div");
+                bookContainer.setAttribute("class", "card col-12 col-sm-6 col-lg-4 mx-auto");
+                bookContainer.style.width = "18rem";
                 const bookImage = document.createElement("img");
-                bookImage.setAttribute("src", item.image);
+                bookImage.setAttribute("src", book.thumbnail);
                 bookImage.setAttribute("class", "card-img-top");
 
                 const cardBody = document.createElement("div");
                 cardBody.setAttribute("class", "card-body text-center");
                 const bookName = document.createElement("h5");
 
-                bookName.innerText = item.title;
+                bookName.innerText = book.title;
                 bookName.setAttribute("class", "card-title");
+                
+                const viewButton = document.createElement("button");
+                viewButton.setAttribute("class", "btn btn-primary w-100 mt-5");
+                viewButton.innerText = "View Book";
 
                 const removeButton = document.createElement("button");
-                removeButton.setAttribute("class", "btn btn-danger w-100 mt-5");
-                removeButton.addEventListener('click', async () => { await removeItem(item.id) });
-                removeButton.innerText = "Remove";
+                removeButton.setAttribute("class", "btn btn-danger w-100 mt-3");
+                removeButton.addEventListener('click', async () => { await removeItem(bookId) });
+                removeButton.innerText = "Remove from wishlist";
+
 
                 cardBody.appendChild(bookName);
+                cardBody.appendChild(viewButton);
                 cardBody.appendChild(removeButton);
 
-                itemContainer.appendChild(bookImage);
-                itemContainer.appendChild(cardBody);
+                bookContainer.appendChild(bookImage);
+                bookContainer.appendChild(cardBody);
 
-                wishlistContainer.appendChild(itemContainer);
+                wishlistContainer.appendChild(bookContainer);
             }
         }
     }
@@ -60,8 +86,7 @@ async function renderWishlist() {
 
 async function removeItem(id) {
     console.log("Deleting book id:", id);
-    const response = await fetch(`http://localhost:3000/books/${id}`, { method: "DELETE" });
-    console.log(response.status);
+    const response = await fetch(`http://localhost:3000/wishlist/${id}`, { method: "DELETE" });
     await renderWishlist();
 }
 
