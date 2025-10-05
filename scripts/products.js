@@ -5,24 +5,26 @@ let currentCategory = "all";
 let batchIndex = 0;
 const batchSize = 12;
 const bookCache = {};
-const detailsModal = new bootstrap.Modal(document.getElementById("detailsModal"));
+const detailsModal = new bootstrap.Modal(
+  document.getElementById("detailsModal")
+);
 
 // Strip HTML from description
 function stripHTML(html) {
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    return div.textContent || div.innerText || "";
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
 }
 
 // Render books
 function renderBooks(books, append = false) {
-    if (!append) booksContainer.innerHTML = "";
+  if (!append) booksContainer.innerHTML = "";
 
-    books.forEach((book) => {
-        const col = document.createElement("div");
-        col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
+  books.forEach((book) => {
+    const col = document.createElement("div");
+    col.className = "col-12 col-sm-6 col-md-4 col-lg-3 mb-4";
 
-        col.innerHTML = `
+    col.innerHTML = `
             <div class="card book-card h-100" data-id="${book.id}">
                 <img src="${book.thumbnail}" class="card-img-top book-cover" alt="${book.title}">
                 <div class="card-body d-flex flex-column">
@@ -44,193 +46,219 @@ function renderBooks(books, append = false) {
                 </div>
             </div>
         `;
-        booksContainer.appendChild(col);
-    });
+    booksContainer.appendChild(col);
+  });
 }
 
-// Prefetch books for category
+// Prefetch category
 async function prefetchCategory(category) {
-    if (!bookCache[category]) bookCache[category] = [];
-    await getBooksByCategory(category);
-    const books = category === "all" ? Object.values(allBooks).flat() : allBooks[category];
-    bookCache[category] = books;
+  if (!bookCache[category]) bookCache[category] = [];
+  await getBooksByCategory(category);
+  const books =
+    category === "all" ? Object.values(allBooks).flat() : allBooks[category];
+  bookCache[category] = books;
 }
 
-// Prefetch next batch in background
+// Prefetch next batch
 async function prefetchNextBatch() {
-    const books = bookCache[currentCategory] || [];
-    const nextStart = (batchIndex + 1) * batchSize;
-    if (books.length <= nextStart) {
-        await prefetchCategory(currentCategory);
-    }
+  const books = bookCache[currentCategory] || [];
+  const nextStart = (batchIndex + 1) * batchSize;
+  if (books.length <= nextStart) {
+    await prefetchCategory(currentCategory);
+  }
 }
 
 // Render next batch
 async function renderNextBatch() {
-    const books = bookCache[currentCategory] || [];
-    const start = batchIndex * batchSize;
-    const end = start + batchSize;
+  const books = bookCache[currentCategory] || [];
+  const start = batchIndex * batchSize;
+  const end = start + batchSize;
 
-    if (books.length < end) {
-        await prefetchCategory(currentCategory);
-    }
+  if (books.length < end) {
+    await prefetchCategory(currentCategory);
+  }
 
-    const nextBatch = bookCache[currentCategory].slice(start, end);
+  const nextBatch = bookCache[currentCategory].slice(start, end);
 
-    if (nextBatch.length === 0) {
-        console.log("No books available yet, trying again...");
-        await prefetchCategory(currentCategory);
-        return renderNextBatch();
-    }
+  if (nextBatch.length === 0) {
+    console.log("No books available yet, trying again...");
+    await prefetchCategory(currentCategory);
+    return renderNextBatch();
+  }
 
-    renderBooks(nextBatch, batchIndex > 0);
-    batchIndex++;
-    prefetchNextBatch();
+  renderBooks(nextBatch, batchIndex > 0);
+  batchIndex++;
+  prefetchNextBatch();
 
-    document.getElementById("load-more-btn").style.display = "inline-block";
+  document.getElementById("load-more-btn").style.display = "inline-block";
 }
 
 // Category filters
 function createCategoryFilters() {
-    const container = document.createElement("div");
-    container.id = "category-filters";
-    container.className = "d-flex flex-wrap gap-2 mb-4";
-    document.getElementById("main-container").prepend(container);
+  const container = document.createElement("div");
+  container.id = "category-filters";
+  container.className = "d-flex flex-wrap gap-2 mb-4";
+  document.getElementById("main-container").prepend(container);
 
-    const categories = ["all", ...Object.keys(allBooks)];
+  const categories = ["all", ...Object.keys(allBooks)];
 
-    categories.forEach((cat) => {
-        const btn = document.createElement("button");
-        btn.className = "btn btn-outline-secondary category-pill";
-        btn.dataset.category = cat;
-        btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
-        if (cat === "all") btn.classList.add("active");
+  categories.forEach((cat) => {
+    const btn = document.createElement("button");
+    btn.className = "btn btn-outline-secondary category-pill";
+    btn.dataset.category = cat;
+    btn.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
+    if (cat === "all") btn.classList.add("active");
 
-        btn.addEventListener("click", () => {
-            document.querySelectorAll(".category-pill").forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentCategory = cat;
-            batchIndex = 0;
-            renderNextBatch();
-        });
-        container.appendChild(btn);
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".category-pill")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentCategory = cat;
+      batchIndex = 0;
+      renderNextBatch();
     });
+    container.appendChild(btn);
+  });
 }
 
-// Load More button
+// Load More
 document
-    .getElementById("load-more-btn")
-    .addEventListener("click", () => renderNextBatch());
+  .getElementById("load-more-btn")
+  .addEventListener("click", () => renderNextBatch());
 
-// Handle Add to Cart
+// Add to Cart
 function handleAddToCart(btn, bookId) {
-    btn.classList.add("added");
-    btn.innerHTML = `<i class="bi bi-check2"></i>`;
-    fetch("http://localhost:5000/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId }),
-        credentials: "include"
-    });
-    setTimeout(() => {
-        btn.classList.remove("added");
-        btn.innerHTML = `<i class="bi bi-cart-plus"></i>`;
-    }, 1200);
+  btn.classList.add("added");
+  btn.innerHTML = `<i class="bi bi-check2"></i>`;
+  fetch("http://localhost:5000/cart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ bookId }),
+    credentials: "include",
+  });
+  setTimeout(() => {
+    btn.classList.remove("added");
+    btn.innerHTML = `<i class="bi bi-cart-plus"></i>`;
+  }, 1200);
 }
 
-// Handle Wishlist
+// Wishlist
 function handleWishlist(btn) {
-    btn.classList.toggle("added");
-    btn.innerHTML = btn.classList.contains("added")
-        ? `<i class="bi bi-heart-fill"></i>`
-        : `<i class="bi bi-heart"></i>`;
+  btn.classList.toggle("added");
+  btn.innerHTML = btn.classList.contains("added")
+    ? `<i class="bi bi-heart-fill"></i>`
+    : `<i class="bi bi-heart"></i>`;
 }
 
 // Card click handling
 booksContainer.addEventListener("click", (e) => {
-    const card = e.target.closest(".book-card");
-    if (!card) return;
-    const bookId = card.dataset.id;
-    const books = bookCache[currentCategory] || [];
-    const book = books.find((b) => b.id === bookId);
-    if (!book) return;
+  const card = e.target.closest(".book-card");
+  if (!card) return;
+  const bookId = card.dataset.id;
+  const books = bookCache[currentCategory] || [];
+  const book = books.find((b) => b.id === bookId);
+  if (!book) return;
 
-    // Add to Cart
-    if (e.target.closest(".btn-primary")) {
-        handleAddToCart(e.target.closest(".btn-primary"), bookId);
-    }
+  // Add to Cart
+  if (e.target.closest(".btn-primary")) {
+    handleAddToCart(e.target.closest(".btn-primary"), bookId);
+  }
 
-    // Wishlist
-    if (e.target.closest(".btn-danger")) {
-        handleWishlist(e.target.closest(".btn-danger"));
-    }
+  // Wishlist
+  if (e.target.closest(".btn-danger")) {
+    handleWishlist(e.target.closest(".btn-danger"));
+  }
 
-    // View details
-    if (e.target.closest(".view-details")) {
-        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                const info = data.volumeInfo;
+  // View details
+  if (e.target.closest(".view-details")) {
+    fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const info = data.volumeInfo;
 
-                document.getElementById("details-img").src =
-                    info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
-                const titleEl = document.getElementById("details-title");
-                titleEl.innerText = info.title || "No title";
-                titleEl.dataset.id = bookId;
-                document.getElementById("details-authors").innerText = info.authors
-                    ? info.authors.join(", ")
-                    : "Unknown Author";
-                document.getElementById("details-desc").innerText = stripHTML(
-                    info.description || "No description available"
-                );
+        document.getElementById("details-img").src =
+          info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
+        const titleEl = document.getElementById("details-title");
+        titleEl.innerText = info.title || "No title";
+        titleEl.dataset.id = bookId;
+        document.getElementById("details-authors").innerText = info.authors
+          ? info.authors.join(", ")
+          : "Unknown Author";
+        document.getElementById("details-desc").innerText = stripHTML(
+          info.description || "No description available"
+        );
 
-                // Sync modal wishlist state with card
-                const modalWishlistBtn = document.getElementById("modal-wishlist-btn");
-                const cardWishlistBtn = card.querySelector(".wishlist-btn");
-                if (cardWishlistBtn?.classList.contains("added")) {
-                    modalWishlistBtn.classList.add("added");
-                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
-                } else {
-                    modalWishlistBtn.classList.remove("added");
-                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
-                }
+        // Sync modal wishlist
+        const modalWishlistBtn = document.getElementById("modal-wishlist-btn");
+        const cardWishlistBtn = card.querySelector(".wishlist-btn");
+        if (cardWishlistBtn?.classList.contains("added")) {
+          modalWishlistBtn.classList.add("added");
+          modalWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+        } else {
+          modalWishlistBtn.classList.remove("added");
+          modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+        }
 
-                detailsModal.show();
-            });
-    }
+        // Reset rating
+        document
+          .querySelectorAll('#rating-form input[type="radio"]')
+          .forEach((r) => (r.checked = false));
+
+        detailsModal.show();
+      });
+  }
 });
 
 // Modal Add to Cart
 document.getElementById("modal-add-to-cart").addEventListener("click", () => {
-    const bookId = document.getElementById("details-title").dataset.id;
-    handleAddToCart(document.getElementById("modal-add-to-cart"), bookId);
+  const bookId = document.getElementById("details-title").dataset.id;
+  handleAddToCart(document.getElementById("modal-add-to-cart"), bookId);
 });
 
 // Modal Wishlist
 document.getElementById("modal-wishlist-btn").addEventListener("click", () => {
-    const modalBtn = document.getElementById("modal-wishlist-btn");
-    const bookId = document.getElementById("details-title").dataset.id;
-    const cardWishlistBtn = document.querySelector(`.book-card[data-id="${bookId}"] .wishlist-btn`);
+  const modalBtn = document.getElementById("modal-wishlist-btn");
+  const bookId = document.getElementById("details-title").dataset.id;
+  const cardWishlistBtn = document.querySelector(
+    `.book-card[data-id="${bookId}"] .wishlist-btn`
+  );
 
-    handleWishlist(modalBtn);
+  handleWishlist(modalBtn);
 
-    // Sync card state
-    if (cardWishlistBtn) {
-        if (modalBtn.classList.contains("added")) {
-            cardWishlistBtn.classList.add("added");
-            cardWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
-        } else {
-            cardWishlistBtn.classList.remove("added");
-            cardWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
-        }
+  if (cardWishlistBtn) {
+    if (modalBtn.classList.contains("added")) {
+      cardWishlistBtn.classList.add("added");
+      cardWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+    } else {
+      cardWishlistBtn.classList.remove("added");
+      cardWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
     }
+  }
 });
+
+// Star rating
+document
+  .querySelectorAll('#rating-form input[type="radio"]')
+  .forEach((radio) => {
+    radio.addEventListener("click", () => {
+      const rating = radio.value;
+      const bookId = document.getElementById("details-title").dataset.id;
+
+      fetch("http://localhost:5000/rating", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookId, rating }),
+        credentials: "include",
+      });
+    });
+  });
 
 // Initialize
 async function init() {
-    createCategoryFilters();
-    await prefetchCategory(currentCategory);
-    renderNextBatch();
+  createCategoryFilters();
+  await prefetchCategory(currentCategory);
+  renderNextBatch();
 }
 
 init();

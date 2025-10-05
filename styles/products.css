@@ -55,3 +55,52 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* Rating stars - left aligned, minimal spacing */
+#wrapper {
+    text-align: left;
+    margin: 5px 0 0 0; /* small space above stars, no bottom margin */
+}
+
+#wrapper form {
+    display: inline-block;
+    padding: 0;
+    border: none;
+}
+
+#wrapper .clasificacion {
+    direction: rtl;
+    unicode-bidi: bidi-override;
+    font-size: 32px;
+    margin: 0;
+}
+
+#wrapper input[type="radio"] {
+    display: none;
+}
+
+#wrapper label {
+    color: grey;
+    cursor: pointer;
+    transition: color 0.2s;
+    padding: 0 4px;
+    display: inline-block;
+}
+
+#wrapper label:hover,
+#wrapper label:hover ~ label {
+    color: orange;
+}
+
+#wrapper input[type="radio"]:checked ~ label {
+    color: orange;
+}
+
+@media (max-width: 576px) {
+    #wrapper .clasificacion {
+        font-size: 28px;
+    }
+    #wrapper label {
+        padding: 0 2px;
+    }
+}
