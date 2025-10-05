@@ -6,49 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/forms.css">
     <link rel="shortcut icon" href="assets/libre.ico" type="image/x-icon">
     <title>Libre - Sign in</title>
 </head>
 
-<body>
-    <div class="vh-100 w-100 d-flex justify-content-center align-items-center">
-        <form
-            class=" px-5 py-3 h-75 d-flex justify-content-center align-items-center flex-column gap-5 border-2 rounded-2 border shadow-lg"
-            id="signInForm">
-            <h1 class="text-center text-black">Sign In</h1>
-            <p class="text-center text-danger" id="errorMessage"></p>
-            <div class="d-flex flex-column w-100 align-items-center gap-3">
-                <div class="d-flex flex-column w-100 form-floating">
-                    <input type="text" class="form-control border-top-0 border-end-0 border-start-0 border-3"
-                        placeholder="Username" id="username">
-                    <label for="username">Username</label>
-                    <div class="invalid-feedback">
-                        <p>Invalid Username</p>
+<body class="bg-light" style="font-family: 'Roboto', sans-serif;">
+
+    <div class="container d-flex flex-column justify-content-center min-vh-100">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <form id="signInForm">
+                            <h1 class="text-center fw-bold text-danger mb-4">Sign In</h1>
+                            <p class="text-center text-danger mb-3" id="errorMessage"></p>
+                            
+                            <div class="mb-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" placeholder="Username" id="username" required>
+                                    <label for="username">Username</label>
+                                </div>
+                                <div class="invalid-feedback d-block" style="display: none !important;" id="usernameError">
+                                    Invalid Username
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" id="password" placeholder="Enter Password" required>
+                                    <label for="password">Password</label>
+                                </div>
+                                <div class="invalid-feedback d-block" style="display: none !important;" id="passwordError">
+                                    Invalid Password
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label for="rememberMe" class="form-check-label">Remember Me</label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid mb-4">
+                                <button type="submit" class="btn btn-danger text-uppercase fw-bold py-2">Sign in</button>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-muted">Don't have an account? <a href="signup.html" class="text-danger text-decoration-none fw-semibold">Sign up</a></span>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
-                <div class="d-flex flex-column w-100 form-floating">
-                    <input type="password" class="form-control border-top-0 border-end-0 border-start-0 border-3"
-                        id="password" placeholder="Enter Password">
-                    <label for="password">Password</label>
-                    <div class="invalid-feedback">
-                        <p>Invalid Password</p>
-                        <!--incorrect password in backend, activate by putting (is-invalid) class in input-->
-                    </div>
-                </div>
             </div>
-            <div class="d-flex flex-column gap-3 w-100">
-                <div class="form-check">
-                    <input class="form-check-input border border-2 border-dark" type="checkbox" id="rememberMe">
-                    <label for="rememberMe" class="text-black form-check-label">Remember Me</label>
-                </div>
-                <button type="submit" class="btn btn-primary">Sign in</button>
-
-                <span class="text-center mt-4">Don't have an account? <a href="signup.html">Sign up</a></span>
-            </div>
-        </form>
+        </div>
     </div>
+
     <script type="module" src="scripts/nav.js"></script>
     <script src="scripts/signinAuth.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
