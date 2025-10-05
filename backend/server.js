@@ -120,18 +120,19 @@ app.get("/me", auth, async (req, res) => {
 
 app.patch("/changepassword", auth, async (req, res) => {
     try {
-        const { oldPassowrd, newPassword } = req.body;
+        const { oldPassword, newPassword } = req.body;
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ error: "User not found" });
-        const isPassValid = await bcrypt.compare(oldPassowrd, user.password);
-        if (!isPassValid) return res.status(400).json({ error: "Invalid password" })
+        const isPassValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPassValid) return res.status(401).json({ error: "Wrong Old Password" })
         if (!validatePassword(newPassword)) {
             return res.status(400).json({ error: "Invalid password" });
         }
-        user.password = bcrypt.hash(newPassword, 10);
-        await user.save()
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
+        res.json({ ok: true });
     }
-    catch {
+    catch (err) {
         console.error(err);
         res.status(500).json({ error: "Server error" });
     }
