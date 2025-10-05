@@ -6,8 +6,6 @@ const passwordChangedAlert = document.querySelector("#passwordChanged");
 const changePasswordForm = document.querySelector("form");
 const newPasswordInput = document.querySelector("#newPassword");
 newPasswordInput.addEventListener('input', validateNewPassword);
-changePasswordForm.addEventListener("submit", changeCurrentPassword);
-
 async function showAccountInfo() {
     try {
         const response = await fetch('http://localhost:5000/me', { credentials: 'include' });
@@ -33,28 +31,23 @@ function validateNewPassword() {
 }
 
 async function changeCurrentPassword() {
-    const newPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
     try {
-        const res = await fetch('http://localhost:5000/me', { credentials: 'include' });
-        const accountInfo = await res.json();
-        const enteredPassword = currentPasswordInput.value;
-
-        if (enteredPassword !== accountInfo.password) {
-            invalidPasswordWarning.classList.remove("d-none");
-            return;
-        } else {
-            invalidPasswordWarning.classList.add("d-none");
-        }
-
-        const response = await fetch('http://localhost:5000/me', {
+        const response = await fetch('http://localhost:5000/changepassword', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ password: newPassword })
+            body: JSON.stringify({ oldPassword: currentPasswordInput.value.trim(), newPassword })
         });
+        if (response.status === 401) {
+            invalidPasswordWarning.classList.remove("d-none");
+            setTimeout(() => invalidPasswordWarning.classList.add("d-none"), 2500)
+            return
+        }
 
         if (response.ok) {
             passwordChangedAlert.classList.remove("d-none");
+            setTimeout(() => passwordChangedAlert.classList.add("d-none"), 2500)
         } else {
             const errorData = await response.json();
             console.error(errorData);
@@ -63,10 +56,10 @@ async function changeCurrentPassword() {
         console.error(err);
     }
 }
-// changePasswordForm.addEventListener('submit', (submitEvent) => {
-//     submitEvent.preventDefault();
-//     if (validateNewPassword()) {
-//         changePasswordForm.submit();
-//     }
-// })
+changePasswordForm.addEventListener('submit', (submitEvent) => {
+    submitEvent.preventDefault();
+    if (validateNewPassword()) {
+        changeCurrentPassword()
+    }
+})
 showAccountInfo();
