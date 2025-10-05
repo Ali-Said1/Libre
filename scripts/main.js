@@ -8,8 +8,8 @@ const interval = setInterval(() => {
   } else clearInterval(interval);
 }, 140);
 fetch("https://gutendex.com/books/")
-  .then((t) => t.json()) // ترجع الـ JSON مباشرة
+  .then((t) => t.json()) 
   .then((e) => {
     console.log(e);
   })
-  .catch((err) => console.error(err)); // دايمًا كويس تضيف catch
+  .catch((err) => console.error(err));
