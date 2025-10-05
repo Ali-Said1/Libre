@@ -1,14 +1,14 @@
 import authUser from "./authUser.js";
 let logCheck = false;
-const { ok } = await authUser();
-if (ok) logCheck = true;
+// const { ok } = await authUser();
+// if (ok) logCheck = true;
 
-function logoutLogic(e) {
-  e.preventDefault()
-  fetch('http://localhost:5000/logout', { method: "POST", credentials: 'include' }).then(window.location.reload())
+// function logoutLogic(e) {
+//   e.preventDefault()
+//   fetch('http://localhost:5000/logout', { method: "POST", credentials: 'include' }).then(window.location.reload())
 
-  return false;
-}
+//   return false;
+// }
 
 let nv = `
 <ul class="nv nav-pills p-2 w-100 d-flex align-items-center list-unstyled" style="color: rgb(224, 32, 32) !important;">
