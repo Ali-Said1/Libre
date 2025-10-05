@@ -253,7 +253,7 @@ app.post("/wishlist", auth, async (req, res) => {
     }
 });
 
-app.post("/wishlist/remove", auth, async (req, res) => {
+app.delete("/wishlist", auth, async (req, res) => {
     const { productId } = req.body;
     if (!productId) return res.status(400).json({ error: "Product ID required" });
 
@@ -261,7 +261,6 @@ app.post("/wishlist/remove", auth, async (req, res) => {
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ error: "User not found" });
 
-        // prevent duplicates
         if (!user.wishlist.some(item => item.productId === productId)) {
             return res.status(400).json({ error: "Doesn't exist in wishlist" });
         }

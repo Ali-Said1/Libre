@@ -52,11 +52,11 @@ function renderBooks(books, append = false) {
 
 // Prefetch category
 async function prefetchCategory(category) {
-  if (!bookCache[category]) bookCache[category] = [];
-  await getBooksByCategory(category);
-  const books =
-    category === "all" ? Object.values(allBooks).flat() : allBooks[category];
-  bookCache[category] = books;
+    if (!bookCache[category]) bookCache[category] = [];
+    await getBooksByCategory(category);
+    const books =
+        category === "all" ? Object.values(allBooks).flat() : allBooks[category];
+    bookCache[category] = books;
 }
 
 // Prefetch next batch
@@ -74,21 +74,21 @@ async function renderNextBatch() {
     const start = batchIndex * batchSize;
     const end = start + batchSize;
 
-  if (books.length < end) {
-    await prefetchCategory(currentCategory);
-  }
+    if (books.length < end) {
+        await prefetchCategory(currentCategory);
+    }
 
-  const nextBatch = bookCache[currentCategory].slice(start, end);
+    const nextBatch = bookCache[currentCategory].slice(start, end);
 
-  if (nextBatch.length === 0) {
-    console.log("No books available yet, trying again...");
-    await prefetchCategory(currentCategory);
-    return renderNextBatch();
-  }
+    if (nextBatch.length === 0) {
+        console.log("No books available yet, trying again...");
+        await prefetchCategory(currentCategory);
+        return renderNextBatch();
+    }
 
-  renderBooks(nextBatch, batchIndex > 0);
-  batchIndex++;
-  prefetchNextBatch();
+    renderBooks(nextBatch, batchIndex > 0);
+    batchIndex++;
+    prefetchNextBatch();
 
     document.getElementById("load-more-btn").style.display = "inline-block";
 }
@@ -128,137 +128,192 @@ document
     .addEventListener("click", () => renderNextBatch());
 
 // Add to Cart
-function handleAddToCart(btn, bookId) {
-  btn.classList.add("added");
-  btn.innerHTML = `<i class="bi bi-check2"></i>`;
-  fetch("http://localhost:5000/cart", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bookId }),
-    credentials: "include",
-  });
-  setTimeout(() => {
-    btn.classList.remove("added");
-    btn.innerHTML = `<i class="bi bi-cart-plus"></i>`;
-  }, 1200);
+async function handleAddToCart(btn, bookId) {
+    try {
+        const addedToCart = await fetch("http://localhost:5000/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookId }),
+            credentials: "include",
+        });
+        const response = await addedToCart.json()
+        if (response.ok) {
+            btn.classList.add("added");
+            btn.innerHTML = `<i class="bi bi-check2"></i>`;
+        } else
+            btn.innerHTML = `<i class="bi bi-x-circle-fill text-danger"></i>`
+    } catch {
+        btn.innerHTML = `<i class="bi bi-x-circle-fill text-danger"></i>`
+    } finally {
+        setTimeout(() => {
+            btn.classList.remove("added");
+            btn.innerHTML = `<i class="bi bi-cart-plus"></i>`;
+        }, 1200);
+    }
 }
 
 // Wishlist
-function handleWishlist(btn) {
-  btn.classList.toggle("added");
-  btn.innerHTML = btn.classList.contains("added")
-    ? `<i class="bi bi-heart-fill"></i>`
-    : `<i class="bi bi-heart"></i>`;
+async function handleWishlist(btn, bookId) {
+    btn.classList.toggle("added");
+    btn.innerHTML = btn.classList.contains("added")
+        ? `<i class="bi bi-heart-fill"></i>`
+        : `<i class="bi bi-heart"></i>`;
+    try {
+        let response;
+        if (!btn.classList.contains('added')) {
+            const removedFromWishlist = await fetch("http://localhost:5000/wishlist", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookId }),
+                credentials: "include",
+            });
+            response = await removedFromWishlist.json()
+        } else {
+            const addedToWishlist = await fetch("http://localhost:5000/wishlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookId }),
+                credentials: "include",
+            });
+            response = await addedToWishlist.json()
+        }
+        if (response.status === 500) {
+            btn.classList.toggle("added");
+            btn.innerHTML = btn.classList.contains("added")
+                ? `<i class="bi bi-heart-fill"></i>`
+                : `<i class="bi bi-heart"></i>`;
+        }
+    } catch (e) {
+        btn.classList.toggle("added");
+        btn.innerHTML = btn.classList.contains("added")
+            ? `<i class="bi bi-heart-fill"></i>`
+            : `<i class="bi bi-heart"></i>`;
+        console.error(e.message)
+    }
 }
 
 // Card click handling
 booksContainer.addEventListener("click", (e) => {
-  const card = e.target.closest(".book-card");
-  if (!card) return;
-  const bookId = card.dataset.id;
-  const books = bookCache[currentCategory] || [];
-  const book = books.find((b) => b.id === bookId);
-  if (!book) return;
+    const card = e.target.closest(".book-card");
+    if (!card) return;
+    const bookId = card.dataset.id;
+    const books = bookCache[currentCategory] || [];
+    const book = books.find((b) => b.id === bookId);
+    if (!book) return;
 
-  // Add to Cart
-  if (e.target.closest(".btn-primary")) {
-    handleAddToCart(e.target.closest(".btn-primary"), bookId);
-  }
+    // Add to Cart
+    if (e.target.closest(".btn-primary")) {
+        handleAddToCart(e.target.closest(".btn-primary"), bookId);
+    }
 
-  // Wishlist
-  if (e.target.closest(".btn-danger")) {
-    handleWishlist(e.target.closest(".btn-danger"));
-  }
+    // Wishlist
+    if (e.target.closest(".btn-danger")) {
+        handleWishlist(e.target.closest(".btn-danger"), bookId);
+    }
 
-  // View details
-  if (e.target.closest(".view-details")) {
-    fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const info = data.volumeInfo;
+    // View details
+    if (e.target.closest(".view-details")) {
+        fetch(`https://www.googleapis.com/books/v1/volumes/${bookId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                const info = data.volumeInfo;
+                console.log(data)
+                document.getElementById("details-img").src =
+                    info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
+                const titleEl = document.getElementById("details-title");
+                titleEl.innerText = info.title || "No title";
+                titleEl.dataset.id = bookId;
+                document.getElementById("details-authors").innerText = info.authors
+                    ? info.authors.join(", ")
+                    : "Unknown Author";
+                document.getElementById("details-desc").innerText = stripHTML(
+                    info.description || "No description available"
+                );
 
-        document.getElementById("details-img").src =
-          info.imageLinks?.thumbnail || "https://via.placeholder.com/150x200";
-        const titleEl = document.getElementById("details-title");
-        titleEl.innerText = info.title || "No title";
-        titleEl.dataset.id = bookId;
-        document.getElementById("details-authors").innerText = info.authors
-          ? info.authors.join(", ")
-          : "Unknown Author";
-        document.getElementById("details-desc").innerText = stripHTML(
-          info.description || "No description available"
-        );
+                fetch(`http://localhost:5000/rate/${bookId}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                })
+                    .then(res => res.json())
+                    .then(rating => {
+                        if (!rating.avg) {
+                            document.getElementById("details-rating").innerText = "No rating available"
+                        }
+                        document.getElementById("details-rating").innerText = `${rating.avg}/5.0, (by ${rating.count} users)`
+                    })
+                    .catch(_ => document.getElementById("details-rating").innerText = "No rating available")
 
-        // Sync modal wishlist
-        const modalWishlistBtn = document.getElementById("modal-wishlist-btn");
-        const cardWishlistBtn = card.querySelector(".wishlist-btn");
-        if (cardWishlistBtn?.classList.contains("added")) {
-          modalWishlistBtn.classList.add("added");
-          modalWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
-        } else {
-          modalWishlistBtn.classList.remove("added");
-          modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
-        }
 
-        // Reset rating
-        document
-          .querySelectorAll('#rating-form input[type="radio"]')
-          .forEach((r) => (r.checked = false));
+                // Sync modal wishlist
+                const modalWishlistBtn = document.getElementById("modal-wishlist-btn");
+                const cardWishlistBtn = card.querySelector(".wishlist-btn");
+                if (cardWishlistBtn?.classList.contains("added")) {
+                    modalWishlistBtn.classList.add("added");
+                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+                } else {
+                    modalWishlistBtn.classList.remove("added");
+                    modalWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+                }
 
-        detailsModal.show();
-      });
-  }
+                // Reset rating
+                document
+                    .querySelectorAll('#rating-form input[type="radio"]')
+                    .forEach((r) => (r.checked = false));
+
+                detailsModal.show();
+            });
+    }
 });
 
 // Modal Add to Cart
 document.getElementById("modal-add-to-cart").addEventListener("click", () => {
-  const bookId = document.getElementById("details-title").dataset.id;
-  handleAddToCart(document.getElementById("modal-add-to-cart"), bookId);
+    const bookId = document.getElementById("details-title").dataset.id;
+    handleAddToCart(document.getElementById("modal-add-to-cart"), bookId);
 });
 
 // Modal Wishlist
 document.getElementById("modal-wishlist-btn").addEventListener("click", () => {
-  const modalBtn = document.getElementById("modal-wishlist-btn");
-  const bookId = document.getElementById("details-title").dataset.id;
-  const cardWishlistBtn = document.querySelector(
-    `.book-card[data-id="${bookId}"] .wishlist-btn`
-  );
+    const modalBtn = document.getElementById("modal-wishlist-btn");
+    const bookId = document.getElementById("details-title").dataset.id;
+    const cardWishlistBtn = document.querySelector(
+        `.book-card[data-id="${bookId}"] .wishlist-btn`
+    );
 
-  handleWishlist(modalBtn);
+    handleWishlist(modalBtn);
 
-  if (cardWishlistBtn) {
-    if (modalBtn.classList.contains("added")) {
-      cardWishlistBtn.classList.add("added");
-      cardWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
-    } else {
-      cardWishlistBtn.classList.remove("added");
-      cardWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+    if (cardWishlistBtn) {
+        if (modalBtn.classList.contains("added")) {
+            cardWishlistBtn.classList.add("added");
+            cardWishlistBtn.innerHTML = `<i class="bi bi-heart-fill"></i>`;
+        } else {
+            cardWishlistBtn.classList.remove("added");
+            cardWishlistBtn.innerHTML = `<i class="bi bi-heart"></i>`;
+        }
     }
-  }
 });
 
 // Star rating
 document
-  .querySelectorAll('#rating-form input[type="radio"]')
-  .forEach((radio) => {
-    radio.addEventListener("click", () => {
-      const rating = radio.value;
-      const bookId = document.getElementById("details-title").dataset.id;
+    .querySelectorAll('#rating-form input[type="radio"]')
+    .forEach((radio) => {
+        radio.addEventListener("click", () => {
+            const rating = radio.value;
+            const bookId = document.getElementById("details-title").dataset.id;
 
-      fetch("http://localhost:5000/rating", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId, rating }),
-        credentials: "include",
-      });
+            fetch("http://localhost:5000/rate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ bookId, rating }),
+                credentials: "include",
+            });
+        });
     });
-  });
 
 // Initialize
 async function init() {
-  createCategoryFilters();
-  await prefetchCategory(currentCategory);
-  renderNextBatch();
+    createCategoryFilters();
+    await prefetchCategory(currentCategory);
+    renderNextBatch();
 }
 
 init();
