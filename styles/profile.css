@@ -1,0 +1,12 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-sherif;
+}
+
+.profile-container {
+    width: 80%;
+    min-height: fit-content;
+    background-color: aliceblue;
+}
