@@ -2,7 +2,7 @@
 
 // The HTML for the footer.
 const footerHTML = `
-<footer class="card-footer fixed-bottom navbar-black bg-dark text-light">
+<footer class="card-footer navbar-black bg-dark text-light">
     <div class="container-fluid d-flex justify-content-center">
         <span class="navbar-text">
             &copy; <span id="current-year"></span> Nova Web Solutions. All Rights Reserved.
@@ -23,12 +23,5 @@ const initializeFooter = () => {
     }
 };
 
-// --- SCRIPT EXECUTION ---
-// Wait for the main HTML document to be fully loaded before running the script.
-// This ensures that the document.body is available.
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeFooter);
-} else {
-    // DOMContentLoaded has already fired
-    initializeFooter();
-}
+
+initializeFooter();

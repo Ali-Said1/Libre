@@ -63,7 +63,7 @@ function renderBook(bookData, quantity) {
 
   const img = document.createElement("img");
   img.src = bookData.thumbnail;
-  img.classList.add("card-img-top", "img-fluid");
+  img.classList.add("card-img-top", "object-fit-contain", "p-3");
   img.alt = bookData.title;
   card.appendChild(img);
 
@@ -75,16 +75,11 @@ function renderBook(bookData, quantity) {
   title.textContent = bookData.title;
   body.appendChild(title);
 
+
   const author = document.createElement("p");
   author.classList.add("card-text", "text-muted", "mb-3");
-  author.textContent = "By " + bookData.authors.map((a) => a.name).join(", ");
+  author.textContent = "By " + bookData.authors.join(", ");
   body.appendChild(author);
-
-  const link = document.createElement("a");
-  link.classList.add("btn", "btn-primary", "mb-3");
-  link.href = bookData.thumbnail;
-  link.textContent = "Read Book";
-  body.appendChild(link);
 
   // Controls section
   const controls = document.createElement("div");
@@ -111,7 +106,7 @@ function renderBook(bookData, quantity) {
   // Remove (trash) button
   const remove = document.createElement("button");
   remove.classList.add("btn", "btn-sm", "btn-danger");
-  remove.innerHTML = '<i class="fa-solid fa-trash"></i>';
+  remove.innerHTML = '<i class="bi bi-trash"></i>';
 
   controls.append(qtyWrapper, remove);
 

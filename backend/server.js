@@ -267,7 +267,8 @@ app.post("/wishlist", auth, async (req, res) => {
     try {
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ error: "User not found" });
-
+        console.log(user)
+        console.log(productId)
         // prevent duplicates
         if (user.wishlist.some(item => item.productId === productId)) {
             return res.status(400).json({ error: "Already in wishlist" });

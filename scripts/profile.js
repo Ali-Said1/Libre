@@ -1,3 +1,10 @@
+import authUser from "./authUser.js";
+
+const response = await authUser();
+if (!response.ok) {
+    window.location.href = "/signin.html"
+}
+
 const usernameParagraph = document.querySelector('#username');
 const emailParagraph = document.querySelector("#useremail");
 const currentPasswordInput = document.querySelector("#currentPassword");

@@ -44,18 +44,24 @@ async function renderWishlist() {
                 bookContainer.style.width = "18rem";
                 const bookImage = document.createElement("img");
                 bookImage.setAttribute("src", book.thumbnail);
-                bookImage.setAttribute("class", "card-img-top");
+                bookImage.setAttribute("class", "card-img-top", "object-fit-contain", "p-3", "pb-0");
 
                 const cardBody = document.createElement("div");
-                cardBody.setAttribute("class", "card-body text-center");
+                // cardBody.setAttribute("class", "card-body text-center");
+                cardBody.classList.add("card-body", "d-flex", "flex-column")
                 const bookName = document.createElement("h5");
 
                 bookName.innerText = book.title;
                 bookName.setAttribute("class", "card-title");
 
-                const viewButton = document.createElement("button");
-                viewButton.setAttribute("class", "btn btn-primary w-100 mt-5");
-                viewButton.innerText = "View Book";
+                const author = document.createElement("p");
+                author.classList.add("card-text", "text-muted", "mb-3");
+                author.textContent = "By " + book.authors.join(", ");
+
+
+                // const viewButton = document.createElement("button");
+                // viewButton.setAttribute("class", "btn btn-primary w-100 mt-auto");
+                // viewButton.innerText = "View Book";
 
                 const removeButton = document.createElement("button");
                 removeButton.setAttribute("class", "btn btn-danger w-100 mt-3");
@@ -64,7 +70,8 @@ async function renderWishlist() {
 
 
                 cardBody.appendChild(bookName);
-                cardBody.appendChild(viewButton);
+                cardBody.appendChild(author);
+                // cardBody.appendChild(viewButton);
                 cardBody.appendChild(removeButton);
 
                 bookContainer.appendChild(bookImage);
@@ -93,3 +100,5 @@ async function removeWishlistItem(id) {
 }
 
 document.addEventListener('DOMContentLoaded', renderWishlist)
+
+renderWishlist()

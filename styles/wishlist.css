@@ -7,12 +7,14 @@
     font-weight: 800;
     font-size: 2rem;
 }
+
 .card {
     transition-duration: 0.7s;
 }
+
 .card:hover {
     color: white;
-    background-color: rgb(43, 40, 40);
+    background-color: rgb(105, 97, 97);
     border-color: black;
     transform: scale(1.05);
 }

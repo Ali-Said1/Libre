@@ -1,3 +1,11 @@
+import authUser from "./authUser.js";
+
+const response = await authUser();
+if (response.ok) {
+  window.location.href = "/index.html"
+}
+
+
 const usernameInput = document.querySelector('#username');
 const passwordInput = document.querySelector('#password');
 const remeberMe = document.querySelector('#rememberMe')
