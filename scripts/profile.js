@@ -4,6 +4,9 @@ const currentPasswordInput = document.querySelector("#currentPassword");
 const invalidPasswordWarning = document.querySelector("#invalidCurrentPassword");
 const passwordChangedAlert = document.querySelector("#passwordChanged");
 const changePasswordForm = document.querySelector("form");
+const newPasswordInput = document.querySelector("#newPassword");
+newPasswordInput.addEventListener('input', validateNewPassword);
+changePasswordForm.addEventListener("submit", changeCurrentPassword);
 
 async function showAccountInfo() {
     try {
@@ -16,17 +19,16 @@ async function showAccountInfo() {
     }
 }
 function validateNewPassword() {
-    const passwordInput = document.querySelector("#newPassword");
-    const newPassword = passwordInput.value;
+    const newPassword = newPasswordInput.value;
     const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{8,}$/;
     //Makes sure that the password is at least 8 characters long, contains one uppercase, one special char and one number.
     if (!passwordRegex.test(newPassword)) {
-        passwordInput.classList.remove("is-valid");
-        passwordInput.classList.add("is-invalid");
+        newPasswordInput.classList.remove("is-valid");
+        newPasswordInput.classList.add("is-invalid");
         return false;
     }
-    passwordInput.classList.add("is-valid");
-    passwordInput.classList.remove("is-invalid");
+    newPasswordInput.classList.add("is-valid");
+    newPasswordInput.classList.remove("is-invalid");
     return true;
 }
 
@@ -68,5 +70,3 @@ async function changeCurrentPassword() {
 //     }
 // })
 showAccountInfo();
-
-changePasswordForm.addEventListener("submit",changeCurrentPassword)
